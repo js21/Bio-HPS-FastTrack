@@ -17,7 +17,7 @@ has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'help'        => ( is => 'rw', isa => 'Bool',     default  => 0 );
 
-has 'study' => ( is => 'rw', isa => 'Int', lazy => 1, default => 0);
+has 'study' => ( is => 'rw', isa => 'Str', lazy => 1, default => 'NA');
 has 'lane' => ( is => 'rw', isa => 'Str', lazy => 1, default => 'NA');
 has 'database'   => ( is => 'rw', isa => 'Str');
 has 'pipeline'   => ( is => 'rw', isa => 'Maybe[ArrayRef]', lazy => 1, default => sub { [] });
@@ -31,7 +31,7 @@ sub BUILD {
 
     GetOptionsFromArray(
 			$self->args,
-			's|study:s' => \$study,
+			's|study=s' => \$study,
 			'l|lane:s' => \$lane,
 			'd|db=s'   => \$database,
 			'p|pipeline=s@' =>\$pipeline,
@@ -50,7 +50,7 @@ sub BUILD {
 sub run {
     my ($self) = @_;
 
-    ( ($self->study || $self->lane) && $self->database && $self->pipeline ) or die die_with_usage();
+    ( ($self->study && $self->database && $self->pipeline ) or die die_with_usage();
 
     my $hps_fast_track = Bio::HPS::FastTrack->new(
 						  study => $self->study,
@@ -61,8 +61,8 @@ sub run {
 						 );
 
 #    $hps_fast_track->pipeline_runners();
-    $hps_fast_track->run;
-    use Data::Dumper;
+    #$hps_fast_track->run;
+    #use Data::Dumper;
     #print Dumper($hps_fast_track);
 
 }

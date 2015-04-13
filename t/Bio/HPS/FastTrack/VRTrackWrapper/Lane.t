@@ -31,7 +31,7 @@ isa_ok ( my $hps_lane2 = Bio::HPS::FastTrack::VRTrackWrapper::Lane->new(
    'Bio::HPS::FastTrack::VRTrackWrapper::Lane');
 
 isa_ok ( $hps_lane2->vrlane(), 'VRLane');
-#print Dumper($hps_lane2);
+print Dumper($hps_lane2);
 
 =head
 

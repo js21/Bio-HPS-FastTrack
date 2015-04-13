@@ -15,7 +15,8 @@ use Cwd qw/abs_path/;
 use Bio::HPS::FastTrack::Exception;
 use Bio::HPS::FastTrack::Types::FastTrackTypes;
 
-has 'study_name' => ( is => 'rw', isa => 'Str', required => 1 );
+has 'study_name' => ( is => 'rw', isa => 'Str', lazy => 1, default => 'NA' );
+has 'lane' => ( is => 'rw', isa => 'Str', lazy => 1, default => 'NA' );
 has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'db_alias'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'add_to_config_path' => ( is => 'rw', isa => 'Str', required => 1 );

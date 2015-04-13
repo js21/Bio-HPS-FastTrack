@@ -4,10 +4,10 @@ package Bio::HPS::FastTrack;
 
 =head1 SYNOPSIS
 
-my $hps_fast_track_bacteria_mapping_and_rna_seq =  Bio::HPS::FastTrack->new( study => '4562', database => 'bacteria', pipeline => ['mapping','rna-seq'] );
-$hps_fast_track_bacteria_mapping_and_rna_seq->study();
-$hps_fast_track_bacteria_mapping_and_rna_seq->database();
-for my $pipeline_run( @{ hps_fast_track_bacteria_mapping_and_rna_seq->pipeline_runners() } ) {
+my $hps_fast_track_bacteria_update_and_import =  Bio::HPS::FastTrack->new( study => 'Comparative RNA-seq analysis of three bacterial species', lane => '7229_2#35' database => 'prokaryotes', pipeline => ['update','import'] );
+$hps_fast_track_bacteria_update_and_import->study();
+$hps_fast_track_bacteria_update_and_import->database();
+for my $pipeline_run( @{ hps_fast_track_bacteria_update_and_import->pipeline_runners() } ) {
   $pipeline_run->run();
 }
 
@@ -18,7 +18,7 @@ use Bio::HPS::FastTrack::SetPipeline;
 use Bio::HPS::FastTrack::Exception;
 use Bio::HPS::FastTrack::Types::FastTrackTypes;
 
-has 'study' => ( is => 'rw', isa => 'Int', lazy => 1, default => 'NA');
+has 'study' => ( is => 'rw', isa => 'Str', required => 1);
 has 'lane' => ( is => 'rw', isa => 'Str', lazy => 1, default => 'NA');
 has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'pipeline'   => ( is => 'rw',  isa => 'Maybe[ArrayRef]', default => sub { [] });
@@ -29,24 +29,10 @@ sub run {
 
   my ($self) = @_;
 
-  if ( defined $self->lane && $self->study eq 'NA' ) {
-    for my $pipeline_runner(@{$self->pipeline_runners()}) {
-      $pipeline_runner->study_metadata();
-      $pipeline_runner->run();
-    }
+  for my $pipeline_runner(@{$self->pipeline_runners()}) {
+    $pipeline_runner->study_metadata();
+    $pipeline_runner->run();
   }
-  if ( defined $self->study && (!defined $self->lane || $self->lane eq 'NA') ) {
-
-    for my $pipeline_runner(@{$self->pipeline_runners()}) {
-      $pipeline_runner->study_metadata();
-      $pipeline_runner->run();
-      $pipeline_runner->config_data();
-      $pipeline_runner->config_data->path_to_high_level_config();
-      $pipeline_runner->config_data->path_to_low_level_config();
-    }
-  }
-
-
 }
 
 sub _build_pipeline_runners {

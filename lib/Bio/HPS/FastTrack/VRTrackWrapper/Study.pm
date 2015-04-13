@@ -18,7 +18,7 @@ use Bio::HPS::FastTrack::Types::FastTrackTypes;
 use Data::Dumper;
 extends('Bio::HPS::FastTrack::VRTrackWrapper::VRTrack');
 
-has 'study' => ( is => 'rw', isa => 'Int', required => 1 );
+has 'study' => ( is => 'rw', isa => 'Str', required => 1 );
 has 'vrtrack_study' => ( is => 'rw', isa => 'VRProject', lazy => 1, builder => '_build_vrtrack_study');
 has 'lanes' => ( is => 'rw', isa => 'HashRef', lazy => 1, builder => '_build_list_of_lanes_for_study');
 
@@ -42,7 +42,9 @@ sub _build_vrtrack_study {
 
 sub _study_not_found {
   my ($study_id) = @_;
+  my ($seqscape_study_name) = _get_study_name_from_warehouse();
   my %study_not_found = (
+			 name => $seqscape_study_name,
 			 study_id => $study_id,
 			 status   => 'study not found in tracking database'
 			);
@@ -54,13 +56,13 @@ sub _get_lane_data_from_database {
 
   my ($self) = @_;
   my %lanes;
-  my $study_id = $self->study();
+  my $study_name = q(') . $self->study() . q(');
   my $sql = <<"END_OF_SQL";
 select la.`name` from latest_lane as la
 inner join latest_library as li on (li.`library_id` = la.`library_id`)
 inner join latest_sample as s on (s.`sample_id` = li.`sample_id`)
 inner join latest_project as p on (p.`project_id` = s.`project_id`)
-where p.`ssid` = $study_id
+where p.`name` = $study_name
 group by la.`name`
 order by la.`name`;
 END_OF_SQL
@@ -94,6 +96,16 @@ END_OF_SQL
 
   return \%lanes;
 }
+
+sub _get_study_name_from_warehouse {
+
+  my ($self) = @_;
+  my $study_name = 'dummy study name';
+  return $study_name;
+
+
+}
+
 
 sub _use_sqllite_test_db {
 

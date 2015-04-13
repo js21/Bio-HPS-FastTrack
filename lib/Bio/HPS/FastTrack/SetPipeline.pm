@@ -20,11 +20,11 @@ use Bio::HPS::FastTrack::PipelineRun::SNPCalling;
 use Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis;
 use Bio::HPS::FastTrack::Exception;
 
-has 'study'   => ( is => 'rw', isa => 'Int', lazy => 1, default => 'NA' );
-has 'lane'   => ( is => 'rw', isa => 'Str', lazy => 1, default => 'NA');
+has 'study'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'pipeline'   => ( is => 'rw',  isa => 'Maybe[ArrayRef]', required => 1);
 has 'mode'   => ( is => 'rw', isa => 'Str', required => 1 );
+has 'lane'   => ( is => 'rw', isa => 'Str', lazy => 1, default => 'NA');
 has 'pipeline_runners'   => ( is => 'rw', isa => 'ArrayRef', lazy => 1, builder => '_build_pipeline_runners');
 
 
