@@ -39,28 +39,6 @@ sub _build_vrtrack_instance {
   return $vrtrack;
 }
 
-
-sub _mock_vrtrack {
-
-  my ($self) = @_;
-
-  my $dbh = _dbh($self);
-  my %vrtrack = (
-		 '_db_params' => {
-				  host => $self->hostname,
-				  port => $self->port,
-				  database => $self->database,
-				  user => $self->user,
-				  password => ''
-			     },
-		 '_dbh' => $dbh,
-		 'transaction' => 0
-	    );
-
-  return \%vrtrack; # returns hashref and not a true VRTrack::VRTrack object
-}
-
-
 sub _dbh {
   my ($self) = @_;
   my $dbi_driver = $self->mode() eq 'prod' ? 'DBI:mysql:database=' : 'DBI:SQLite:dbname=';

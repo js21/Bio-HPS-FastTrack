@@ -21,9 +21,11 @@ after 'run' => sub {
   my ($self) = @_;
   my $command = $self->pipeline_exec();
   if ( $self->study_pipeline_stage->{'stage'} eq $self->stage_not_done ) {
-    $command .= q( -n ') . $self->study_metadata->vrtrack_study->{'study'} . q(' --database=) . $self->database . q( -nop -v -t cram);
+    $command .= q( -n ') . $self->study_metadata->{'study'} . q(' --database=) . $self->database . q( -nop -v -t cram);
   }
   print "$command\n";
+  my $ouput = `cd /nfs/users/nfs_j/js21/work/update_pipeline; $command`;
+
 
 };
 

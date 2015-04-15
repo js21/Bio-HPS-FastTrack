@@ -43,7 +43,7 @@ $update_runner3->run();
 ok( my $update_runner4 = Bio::HPS::FastTrack::PipelineRun::Update->new( study => 'Comparative RNA-seq analysis' , database => 'pathogen_hpsft_test', mode => 'prod' ), 'Creating a Mapping runner object');
 isa_ok ( $update_runner4, 'Bio::HPS::FastTrack::PipelineRun::Update' );
 $update_runner4->run();
-print Dumper($update_runner4);
+#print Dumper($update_runner4);
 
 =head
 
