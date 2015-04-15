@@ -31,7 +31,9 @@ sub _build_list_of_lanes_for_study {
 sub _build_vrtrack_study {
 
   my ($self) = @_;
-  my $vrtrack_study = VRTrack::Project->new_by_ssid( $self->vrtrack(), $self->study);
+
+  $self->_set_full_study_name();
+  my $vrtrack_study = VRTrack::Project->new_by_name( $self->vrtrack(), $self->study);
   if (defined $vrtrack_study && $vrtrack_study ne qq() ) {
     return $vrtrack_study;
   }
@@ -41,28 +43,58 @@ sub _build_vrtrack_study {
 }
 
 sub _study_not_found {
-  my ($study_id) = @_;
-  my ($seqscape_study_name) = _get_study_name_from_warehouse();
+  my ($study) = @_;
   my %study_not_found = (
-			 name => $seqscape_study_name,
-			 study_id => $study_id,
+			 study => $study,
 			 status   => 'study not found in tracking database'
 			);
   bless(\%study_not_found, "VRProject");
   return \%study_not_found;
 }
 
+sub _set_full_study_name {
+
+  my ($self) = @_;
+  my $sql_study_name_regex = _prepare_sql_study_name_string($self->study);
+  my $sql = <<"END_OF_SQL";
+select p.`name` from latest_project as p
+where p.`name` like $sql_study_name_regex
+END_OF_SQL
+
+  my $dbi_driver = $self->mode() eq 'prod' ? 'DBI:mysql:database=' : 'DBI:SQLite:dbname=';
+  my $dsn = $dbi_driver . $self->database() . ';host=' . $self->hostname() . ';port=' . $self->port();
+  my $dbh = DBI->connect($dsn, $self->user()) ||
+    Bio::HPS::FastTrack::Exception::DatabaseConnection->throw(
+							      error => "Error: Could not connect to database '" .
+							      $self->database() . "' on host '" .
+							      $self->hostname . "' on port '" . $self->port . "'\n"
+							     );
+  my $sth = $dbh->prepare($sql);
+  $sth->execute();
+  my $ref = $sth->fetchrow_arrayref();
+
+  return 1 if !defined $ref;
+
+  Bio::HPS::FastTrack::Exception::SeveralStudiesForStudyName->throw(
+								    error => "Error: There are several studies in the database for the study name '" .
+								    $self->study() . "' Try again with the full study name"
+								   ) if scalar @{ $ref } > 1;
+  $self->study($ref->[0]);
+  $sth->finish();
+  $dbh->disconnect();
+}
+
 sub _get_lane_data_from_database {
 
   my ($self) = @_;
   my %lanes;
-  my $study_name = q(') . $self->study() . q(');
+  my $sql_study_name_regex = _prepare_sql_study_name_string($self->study);
   my $sql = <<"END_OF_SQL";
 select la.`name` from latest_lane as la
 inner join latest_library as li on (li.`library_id` = la.`library_id`)
 inner join latest_sample as s on (s.`sample_id` = li.`sample_id`)
 inner join latest_project as p on (p.`project_id` = s.`project_id`)
-where p.`name` = $study_name
+where p.`name` like $sql_study_name_regex
 group by la.`name`
 order by la.`name`;
 END_OF_SQL
@@ -97,15 +129,11 @@ END_OF_SQL
   return \%lanes;
 }
 
-sub _get_study_name_from_warehouse {
+sub _prepare_sql_study_name_string {
 
-  my ($self) = @_;
-  my $study_name = 'dummy study name';
-  return $study_name;
-
-
+  my ($study_name) = @_;
+  return(q(') . $study_name . q(%'));
 }
-
 
 sub _use_sqllite_test_db {
 

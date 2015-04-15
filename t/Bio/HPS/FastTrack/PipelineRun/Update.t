@@ -9,7 +9,7 @@ BEGIN {
     use_ok('Bio::HPS::FastTrack::PipelineRun::Update');
   }
 
-ok( my $update_runner = Bio::HPS::FastTrack::PipelineRun::Update->new( study =>  'Comparative RNA seq analysis of three bacterial species' , database => 'pathogen_prok_track_test', mode => 'prod' ), 'Creating a Mapping runner object');
+ok( my $update_runner = Bio::HPS::FastTrack::PipelineRun::Update->new( study =>  'Comparative RNA-seq analysis of three bacterial species' , database => 'pathogen_hpsft_test', mode => 'prod' ), 'Creating a Mapping runner object');
 isa_ok ( $update_runner, 'Bio::HPS::FastTrack::PipelineRun::Update' );
 #ok ( $update_runner->study_metadata(), 'Creating study object');
 #isa_ok ( $update_runner->study_metadata(), 'Bio::HPS::FastTrack::VRTrackWrapper::Study');
@@ -17,7 +17,7 @@ isa_ok ( $update_runner, 'Bio::HPS::FastTrack::PipelineRun::Update' );
 #ok ( $update_runner->study_metadata()->vrtrack_study(), 'Setting study');
 $update_runner->run();
 
-print Dumper($update_runner);
+#print Dumper($update_runner);
 
 #isa_ok ($update_runner->study_metadata()->lanes()->{'7153_1#20'}, 'VRTrack::Lane');
 
@@ -25,20 +25,25 @@ print Dumper($update_runner);
 
 
 
-ok( my $update_runner2 = Bio::HPS::FastTrack::PipelineRun::Update->new( study => 'Comparative RNA seq analysis of three bacterial species', lane => '8405_4#7' , database => 'pathogen_prok_track_test', mode => 'prod' ), 'Creating a Mapping runner object');
+ok( my $update_runner2 = Bio::HPS::FastTrack::PipelineRun::Update->new( study => 'Comparative RNA-seq analysis of three bacterial species', lane => '8405_4#7' , database => 'pathogen_hpsft_test', mode => 'prod' ), 'Creating a Mapping runner object');
 isa_ok ( $update_runner2, 'Bio::HPS::FastTrack::PipelineRun::Update' );
 $update_runner2->run();
-print Dumper($update_runner2);
+#print Dumper($update_runner2);
 
 
 
 #$update_runner2->in_config_file();
 
-ok( my $update_runner3 = Bio::HPS::FastTrack::PipelineRun::Update->new( study => 20 , database => 'pathogen_prok_track_test', mode => 'prod' ), 'Creating a Mapping runner object');
+ok( my $update_runner3 = Bio::HPS::FastTrack::PipelineRun::Update->new( study => 'Non existent study' , database => 'pathogen_hpsft_test', mode => 'prod' ), 'Creating a Mapping runner object');
 isa_ok ( $update_runner3, 'Bio::HPS::FastTrack::PipelineRun::Update' );
 $update_runner3->run();
 #print Dumper($update_runner3);
 
+
+ok( my $update_runner4 = Bio::HPS::FastTrack::PipelineRun::Update->new( study => 'Comparative RNA-seq analysis' , database => 'pathogen_hpsft_test', mode => 'prod' ), 'Creating a Mapping runner object');
+isa_ok ( $update_runner4, 'Bio::HPS::FastTrack::PipelineRun::Update' );
+$update_runner4->run();
+print Dumper($update_runner4);
 
 =head
 
