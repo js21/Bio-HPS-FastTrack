@@ -12,14 +12,14 @@ BEGIN {
 
 
 isa_ok ( my $hps_lane = Bio::HPS::FastTrack::VRTrackWrapper::Lane->new(
-							     database => 'pathogen_prok_track_test',
+							     database => 'pathogen_hpsft_test',
 							     mode => 'prod',
-							     lane_name => '7229_2#35',
+							     lane_name => '9789_2#29',
 							    ),
    'Bio::HPS::FastTrack::VRTrackWrapper::Lane');
 
-isa_ok ( $hps_lane->vrlane(), 'VRTrack::Lane');
-#print Dumper($hps_lane);
+#isa_ok ( $hps_lane->vrlane(), 'VRTrack::Lane');
+print Dumper($hps_lane);
 
 
 
@@ -30,7 +30,7 @@ isa_ok ( my $hps_lane2 = Bio::HPS::FastTrack::VRTrackWrapper::Lane->new(
 							    ),
    'Bio::HPS::FastTrack::VRTrackWrapper::Lane');
 
-isa_ok ( $hps_lane2->vrlane(), 'VRLane');
+#isa_ok ( $hps_lane2->vrlane(), 'VRLane');
 print Dumper($hps_lane2);
 
 =head

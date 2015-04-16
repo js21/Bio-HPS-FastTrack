@@ -4,7 +4,7 @@ package Bio::HPS::FastTrack::VRTrackWrapper::Lane;
 
 =head1 SYNOPSIS
 
-my $hps_lane = Bio::HPS::FastTrack::VRTrackObject::Lane->new(
+my $hps_lane = Bio::HPS::FastTrack::VRTrackWrapper::Lane->new(
 							     database => 'pathogen_prok_track_test',
 							     mode => 'prod',
 							     lane_name => '7229_2#35',
@@ -18,27 +18,23 @@ use Bio::HPS::FastTrack::Types::FastTrackTypes;
 extends('Bio::HPS::FastTrack::VRTrackWrapper::VRTrack');
 
 has 'lane_name'      => ( is => 'rw', isa => 'Str', required => 1 );
-has 'vrlane' => ( is => 'rw', isa => 'VRLane', lazy => 1, builder => '_build_vrtrack_lane' );
+has 'run_id' => ( is => 'rw', isa => 'Int', builder => '_build_run_id' );
+#has 'vrlane' => ( is => 'rw', isa => 'VRTrack::Lane', builder => '_build_vrtrack_lane' );
+
+
+sub _build_run_id {
+
+  my ($self) = @_;
+  my $run_id = $self->lane_name;
+  $run_id =~ s/(^[0-9]+)_.*/$1/g;
+  return $run_id;
+}
 
 sub _build_vrtrack_lane {
 
   my ($self) = @_;
-  my $vrlane = VRTrack::Lane->new_by_name($self->vrtrack, $self->lane_name);
-  if (defined $vrlane && $vrlane ne qq()) {
-    return $vrlane;
-  }
-  else {
-    return _lane_not_found($self->lane_name);
-  }
-}
-
-sub _lane_not_found {
-  my ($lane_name) = @_;
-  my %lane_not_found = (
-			lane_name => $lane_name,
-			status => 'lane not found in tracking database' );
-  bless(\%lane_not_found, "VRLane");
-  return \%lane_not_found;
+  my $vrlane = VRTrack::Lane->create($self->vrtrack, $self->lane_name);
+  return $vrlane;
 }
 
 no Moose;

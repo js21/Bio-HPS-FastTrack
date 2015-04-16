@@ -11,23 +11,29 @@ my $import_runner = Bio::HPS::FastTrack::PipelineRun::Update->new(study =>  2027
 use Moose;
 extends('Bio::HPS::FastTrack::PipelineRun::PipelineRun');
 
-has 'stage_done'   => ( is => 'ro', isa => 'Str', default => 'updated' );
-has 'stage_not_done'   => ( is => 'ro', isa => 'Str', default => 'not updated' );
-has 'add_to_config_path' => ( is => 'ro', isa => 'Str', default => 'update' );
-has 'pipeline_exec' => ( is => 'ro' => isa => 'Str', default => '/software/pathogen/projects/update_pipeline/bin/update_pipeline.pl' );
+has 'pipeline_exec' => ( is => 'ro', isa => 'Str', default => '/software/pathogen/projects/update_pipeline/bin/update_pipeline.pl' );
+has 'pipeline_stage' => ( is => 'ro', isa => 'Str', default => 'update_pipeline' );
 
-after 'run' => sub {
+sub run {
 
   my ($self) = @_;
+
+  my $lock_file = $self->lock_file();
   my $command = $self->pipeline_exec();
-  if ( $self->study_pipeline_stage->{'stage'} eq $self->stage_not_done ) {
-    $command .= q( -n ') . $self->study_metadata->{'study'} . q(' --database=) . $self->database . q( -nop -v -t cram);
+
+  if ($self->lane) {
+    $command .= q( -n ') . $self->study . q(' --database=) . $self->database . q( -run ) . $self->lane_metadata->run_id . q( -l ) . $self->lock_file . q( -nop -v --file_type cram);
+  }
+  else {
+    $command .= q( -n ') . $self->study_metadata->{'study'} . q(' --database=) . $self->database . q( -l ) . $self->lock_file . q( -nop -v --file_type cram);
   }
   print "$command\n";
-  my $ouput = `cd /nfs/users/nfs_j/js21/work/update_pipeline; $command`;
+  my $output = `cd /nfs/users/nfs_j/js21/work/update_pipeline; $command`;
+  print "$output\n";
+
+}
 
 
-};
 
 
 no Moose;
