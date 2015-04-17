@@ -18,26 +18,30 @@ use Bio::HPS::FastTrack::SetPipeline;
 use Bio::HPS::FastTrack::Exception;
 use Bio::HPS::FastTrack::Types::FastTrackTypes;
 
-has 'study' => ( is => 'rw', isa => 'Str', required => 1);
-has 'lane' => ( is => 'rw', isa => 'Str', lazy => 1, default => 'NA');
+has 'study' => ( is => 'rw', isa => 'Str', lazy => 1, default => '');
+has 'lane' => ( is => 'rw', isa => 'Str', lazy => 1, default => '');
 has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'pipeline'   => ( is => 'rw',  isa => 'Maybe[ArrayRef]', default => sub { [] });
 has 'pipeline_runners'   => ( is => 'rw', isa => 'ArrayRef', lazy => 1, builder => '_build_pipeline_runners');
-has 'mode'   => ( is => 'rw', isa => 'RunMode', required => 1 );
 
 sub run {
 
   my ($self) = @_;
 
   for my $pipeline_runner(@{$self->pipeline_runners()}) {
-    $pipeline_runner->study_metadata();
-    $pipeline_runner->run();
+    if ( $self->study() ) {
+      $pipeline_runner->run();
+    }
+    else {
+      $pipeline_runner->lane_metadata();
+      $pipeline_runner->run();
+    }
   }
 }
 
 sub _build_pipeline_runners {
   my ($self) = @_;
-  return Bio::HPS::FastTrack::SetPipeline->new( study => $self->study(), lane => $self->lane(), pipeline => $self->pipeline(), database=> $self->database(), mode => $self->mode )->pipeline_runners();
+  return Bio::HPS::FastTrack::SetPipeline->new( study => $self->study(), lane => $self->lane(), pipeline => $self->pipeline(), database=> $self->database() )->pipeline_runners();
 }
 
 no Moose;

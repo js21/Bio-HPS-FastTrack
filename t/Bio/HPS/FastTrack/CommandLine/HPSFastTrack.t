@@ -20,35 +20,41 @@ my $script_name = 'Bio::HPS::FastTrack::CommandLine::HPSFastTrack';
 local $ENV{PATH} = "$ENV{PATH}:./bin";
 my %scripts_and_expected_files;
 
-system('touch empty_file');
 
-%scripts_and_expected_files = (
-			       ' -h' =>
-			       [
-				['empty_file', 'empty_file']
-			       ],
-			       ' -s 2027 -d pathogen_prok_track_test' =>
-			       [
-				['empty_file', 'empty_file']
-			       ],
-			       ' -s 2027 -d pathogen_prok_track_test -p mapping' =>
-			       [
-				['empty_file','empty_file']
-			       ],
-			       ' -s 2027 -d pathogen_prok_track_test -p mapping -p rna-seq' =>
-			       [
-				['empty_file','empty_file']
-			       ],
-);
+my @params = ('-s', 'Comparative RNA-seq analysis of three bacterial species','-d','pathogen_hpsft_test');
 
-mock_execute_script_and_check_multiple_file_output( $script_name,
-    \%scripts_and_expected_files );
+my $cmd = "$script_name->new(args => \\\@params, script_name => '$script_name')->run;";
+print "$cmd\n";
+eval($cmd);
+my $output = $@;
+is($output, "Error: No pipeline was specified through the command line option -p. Usage can be accessed through the -h option.\n", 'No pipeline specified');
 
-cleanup_files();
-done_testing();
+@params = ('-s','Comparative RNA-seq analysis of three bacterial species','-d','pathogen_hpsft_test','-p','update');
+$cmd = "$script_name->new(args => \\\@params, script_name => '$script_name')->run;";
+eval($cmd);
+$output = $@;
+is($output, q(), 'pipeline_runners method not run');
 
-sub cleanup_files {
-  unlink('empty_file');
-  #unlink('~/hps_fast_track_config/config_2465');
-  #rmdir('~/hps_fast_track_config');
-}
+
+@params = ('-h');
+my $expected_usage = <<USAGE;
+Usage:
+  Specify the study name, the lane or both
+  -s|study         <optional: Study name to fast track>
+  -l|lane          <optional: Lane name to fast track>
+  -d|database      <the tracking database to store the relevant data for the study/lane>
+  -p|pipeline      <the pipeline to run>
+  -h|help          <print this message>
+
+Utility script to fast track high priority samples through the Pathogen Informatics pipelines
+
+
+USAGE
+
+$cmd = "$script_name->new(args => \\\@params, script_name => '$script_name')->run;";
+eval($cmd);
+$output = $@;
+is($output, $expected_usage, "Usage");
+
+
+

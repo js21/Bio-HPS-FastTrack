@@ -4,7 +4,7 @@ package Bio::HPS::FastTrack::PipelineRun::Update;
 
 =head1 SYNOPSIS
 
-my $import_runner = Bio::HPS::FastTrack::PipelineRun::Update->new(study =>  2027, database => 'pathogen_prok_track_test');
+my $update_runner = Bio::HPS::FastTrack::PipelineRun::Update->new(study =>  'My Study', lane => 'My lane' , database => 'pathogen_hpsft_test');
 
 =cut
 
@@ -20,21 +20,25 @@ sub run {
 
   my $lock_file = $self->lock_file();
   my $command = $self->pipeline_exec();
+  my $min_run_id;
 
   if ($self->lane) {
-    $command .= q( -n ') . $self->study . q(' --database=) . $self->database . q( -run ) . $self->lane_metadata->run_id . q( -l ) . $self->lock_file . q( -nop -v --file_type cram);
+    $min_run_id = $self->lane_metadata->run_id - 1;
+    $command .= q( -n ') . $self->study . q(' --database=) . $self->database . q( -run ) . $self->lane_metadata->run_id . q( -min ) . $min_run_id . q( -l ) . $self->lock_file . q( -nop -v --file_type cram);
+  }
+  elsif ($self->study && $self->lane) {
+    $min_run_id = $self->lane_metadata->run_id - 1;
+    $command .= q( -n ') . $self->study_metadata->{'study'} . q(' --database=) . $self->database . q( -run ) . $self->lane_metadata->run_id . q( -min ) . $min_run_id . q( -l ) . $self->lock_file . q( -nop -v --file_type cram);
   }
   else {
     $command .= q( -n ') . $self->study_metadata->{'study'} . q(' --database=) . $self->database . q( -l ) . $self->lock_file . q( -nop -v --file_type cram);
   }
+
   print "$command\n";
-  my $output = `cd /nfs/users/nfs_j/js21/work/update_pipeline; $command`;
+  my $output = `cd /software/pathogen/projects/update_pipeline; $command`;
   print "$output\n";
 
 }
-
-
-
 
 no Moose;
 __PACKAGE__->meta->make_immutable;

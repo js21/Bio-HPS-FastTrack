@@ -20,11 +20,10 @@ use Bio::HPS::FastTrack::PipelineRun::SNPCalling;
 use Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis;
 use Bio::HPS::FastTrack::Exception;
 
-has 'study'   => ( is => 'rw', isa => 'Str', required => 1 );
+has 'study'   => ( is => 'rw', isa => 'Str', lazy => 1, default => '' );
+has 'lane'   => ( is => 'rw', isa => 'Str', lazy => 1, default => '');
 has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'pipeline'   => ( is => 'rw',  isa => 'Maybe[ArrayRef]', required => 1);
-has 'mode'   => ( is => 'rw', isa => 'Str', required => 1 );
-has 'lane'   => ( is => 'rw', isa => 'Str', lazy => 1, default => 'NA');
 has 'pipeline_runners'   => ( is => 'rw', isa => 'ArrayRef', lazy => 1, builder => '_build_pipeline_runners');
 
 
@@ -33,8 +32,11 @@ sub _build_pipeline_runners {
   my ($self) = @_;
 
   my @runners;
+  if ( $self->study eq '' && $self->lane eq '' ) {
+    Bio::HPS::FastTrack::Exception::StudyAndLaneNotSpecified->throw( error => "Error: Specify a lane or a study or both\n" );
+  }
   if ( scalar @{ $self->pipeline() } == 0 ) {
-    Bio::HPS::Exception::NoPipelineSpecified->throw( error => "Error: No pipeline was specified through the command line option -p. Usage can be accessed through the -h option.\n" );
+    Bio::HPS::FastTrack::Exception::NoPipelineSpecified->throw( error => "Error: No pipeline was specified through the command line option -p. Usage can be accessed through the -h option.\n" );
   }
   else {
     for my $pipeline(@{ $self->pipeline() }) {
@@ -43,32 +45,25 @@ sub _build_pipeline_runners {
 	push( @runners, $allowed_pipeline );
       }
       else {
-	Bio::HPS::Exception::PipelineNotSupported->throw( error => "Error: The requested pipeline is not supported '" . $pipeline . "'\n" );
+	Bio::HPS::FastTrack::Exception::PipelineNotSupported->throw( error => "Error: The requested pipeline is not supported '" . $pipeline . "'\n" );
       }
     }
   }
   return \@runners;
 }
 
-
-sub _set_pipeline_order {
-
-  my ($self) = @_;
-
-}
-
 sub _allowed_pipelines {
 
   my ($self, $pipeline) = @_;
   my %pipelines = (
-		   'update' => Bio::HPS::FastTrack::PipelineRun::Update->new(study => $self->study(), database => $self->database(), mode => $self->mode ),
-		   'import' => Bio::HPS::FastTrack::PipelineRun::Import->new(study => $self->study(), database => $self->database(), mode => $self->mode ),
-		   'qc' => Bio::HPS::FastTrack::PipelineRun::QC->new(study => $self->study(), database => $self->database(), mode => $self->mode ),
-		   'mapping' => Bio::HPS::FastTrack::PipelineRun::Mapping->new(study => $self->study(), database => $self->database(), mode => $self->mode ),
-		   'assembly' => Bio::HPS::FastTrack::PipelineRun::Assembly->new(study => $self->study(), database => $self->database(), mode => $self->mode ),
-		   'annotation' => Bio::HPS::FastTrack::PipelineRun::Annotation->new(study => $self->study(), database => $self->database(), mode => $self->mode ),
-		   'snp-calling' => Bio::HPS::FastTrack::PipelineRun::SNPCalling->new(study => $self->study(), database => $self->database(), mode => $self->mode ),
-		   'rna-seq' => Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis->new(study => $self->study(), database => $self->database(), mode => $self->mode ),
+		   'update' => Bio::HPS::FastTrack::PipelineRun::Update->new(study => $self->study(), lane => $self->lane(), database => $self->database() ),
+		   'import' => Bio::HPS::FastTrack::PipelineRun::Import->new(study => $self->study(), lane => $self->lane(), database => $self->database() ),
+		   'qc' => Bio::HPS::FastTrack::PipelineRun::QC->new(study => $self->study(), lane => $self->lane(), database => $self->database() ),
+		   'mapping' => Bio::HPS::FastTrack::PipelineRun::Mapping->new(study => $self->study(), lane => $self->lane(), database => $self->database() ),
+		   'assembly' => Bio::HPS::FastTrack::PipelineRun::Assembly->new(study => $self->study(), lane => $self->lane(), database => $self->database() ),
+		   'annotation' => Bio::HPS::FastTrack::PipelineRun::Annotation->new(study => $self->study(), lane => $self->lane(), database => $self->database() ),
+		   'snp-calling' => Bio::HPS::FastTrack::PipelineRun::SNPCalling->new(study => $self->study(), lane => $self->lane(), database => $self->database() ),
+		   'rna-seq' => Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis->new(study => $self->study(), lane => $self->lane(), database => $self->database() ),
 		  );
   return $pipelines{$pipeline};
 }

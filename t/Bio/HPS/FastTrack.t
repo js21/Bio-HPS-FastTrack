@@ -11,17 +11,32 @@ BEGIN {
 }
 
 
-
-
-
-ok ( my $hps_fast_track_update =  Bio::HPS::FastTrack->new( study => 'Comparative RNA-seq analysis of three bacterial species', database => 'pathogen_hpsft_test', pipeline => ['update'], mode => 'prod' ), 'Creating update HPS::FastTrack object' );
-is ( $hps_fast_track_update->mode(), 'prod', 'Run mode');
+ok ( my $hps_fast_track_update =  Bio::HPS::FastTrack->new( study => 'Comparative RNA-seq analysis of three bacterial species', database => 'pathogen_hpsft_test', pipeline => ['update'] ), 'Creating update HPS::FastTrack object' );
 is ( $hps_fast_track_update->database(), 'pathogen_hpsft_test', 'Database name comparison mapping');
 is_deeply ( $hps_fast_track_update->pipeline(), ['update'], 'Pipeline types comparison mapping');
 isa_ok ( $hps_fast_track_update->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::Update' );
-$hps_fast_track_update->run;
 is ( $hps_fast_track_update->pipeline_runners()->[0]->study_metadata->study(), 'Comparative RNA-seq analysis of three bacterial species', 'Study id comparison mapping');
+$hps_fast_track_update->run;
 
+ok ( my $hps_fast_track_update_lane =  Bio::HPS::FastTrack->new( lane => '8405_4#7', database => 'pathogen_hpsft_test', pipeline => ['update'] ), 'Creating update_lane HPS::FastTrack object' );
+isa_ok ( $hps_fast_track_update_lane->pipeline_runners->[0], 'Bio::HPS::FastTrack::PipelineRun::Update' );
+$hps_fast_track_update_lane->run();
+is ( $hps_fast_track_update_lane->pipeline_runners->[0]->study, 'Comparative RNA-seq analysis of three bacterial species', 'Study name' );
+
+
+ok ( my $hps_fast_track_update_study_for_run =  Bio::HPS::FastTrack->new( study => 'Comparative RNA-seq analysis of three bacterial species', lane => '8405_4#7', database => 'pathogen_hpsft_test', pipeline => ['update'] ), 'Creating update HPS::FastTrack object' );
+is ( $hps_fast_track_update_study_for_run->database(), 'pathogen_hpsft_test', 'Database name comparison mapping');
+is_deeply ( $hps_fast_track_update_study_for_run->pipeline(), ['update'], 'Pipeline types comparison mapping');
+isa_ok ( $hps_fast_track_update_study_for_run->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::Update' );
+is ( $hps_fast_track_update_study_for_run->pipeline_runners()->[0]->study_metadata->study(), 'Comparative RNA-seq analysis of three bacterial species', 'Study id comparison mapping');
+$hps_fast_track_update_study_for_run->run;
+
+ok ( my $hps_fast_track_update_without_main_parameters =  Bio::HPS::FastTrack->new( database => 'pathogen_hpsft_test', pipeline => ['update'] ), 'Creating update HPS::FastTrack object' );
+is ( $hps_fast_track_update_without_main_parameters->database(), 'pathogen_hpsft_test', 'Database name comparison mapping');
+is_deeply ( $hps_fast_track_update_without_main_parameters->pipeline(), ['update'], 'Pipeline types comparison mapping');
+throws_ok { $hps_fast_track_update_without_main_parameters->pipeline_runners()->[0]} qr/Specify a lane or a study or both/, 'No study or lane specified';
+
+done_testing();
 
 =head
 
@@ -134,4 +149,3 @@ throws_ok { $hps_fast_track_all->pipeline_runners() } qr/The requested pipeline 
 
 =cut
 
-done_testing();

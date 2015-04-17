@@ -4,7 +4,7 @@ package Bio::HPS::FastTrack::VRTrackWrapper::Study;
 
 =head1 SYNOPSIS
 
-my $study = Bio::HPS::FastTrack::VRTrackWrapper::Study->new(study => 2027, database => 'pathogen_prok_track_test', mode => 'prod'), 'Study object creation' );
+my $study = Bio::HPS::FastTrack::VRTrackWrapper::Study->new(study => 2027, database => 'pathogen_prok_track_test' ), 'Study object creation' );
 
 =cut
 
@@ -61,15 +61,7 @@ select p.`name` from latest_project as p
 where p.`name` like $sql_study_name_regex
 END_OF_SQL
 
-  my $dbi_driver = $self->mode() eq 'prod' ? 'DBI:mysql:database=' : 'DBI:SQLite:dbname=';
-  my $dsn = $dbi_driver . $self->database() . ';host=' . $self->hostname() . ';port=' . $self->port();
-  my $dbh = DBI->connect($dsn, $self->user()) ||
-    Bio::HPS::FastTrack::Exception::DatabaseConnection->throw(
-							      error => "Error: Could not connect to database '" .
-							      $self->database() . "' on host '" .
-							      $self->hostname . "' on port '" . $self->port . "'\n"
-							     );
-  my $sth = $dbh->prepare($sql);
+  my $sth = $self->connection->prepare($sql);
   $sth->execute();
   my $ref = $sth->fetchrow_arrayref();
 
@@ -81,7 +73,6 @@ END_OF_SQL
 								   ) if scalar @{ $ref } > 1;
   $self->study($ref->[0]);
   $sth->finish();
-  $dbh->disconnect();
 }
 
 sub _get_lane_data_from_database {
@@ -99,32 +90,17 @@ group by la.`name`
 order by la.`name`;
 END_OF_SQL
 
-  my $dbi_driver = $self->mode() eq 'prod' ? 'DBI:mysql:database=' : 'DBI:SQLite:dbname=';
-  my $create_test_db = 't/data/database/create_test_db_and_populate.sql';
-  my $destroy_test_db = 't/data/database/create_test_db_and_populate.sql';
-  _use_sqllite_test_db($create_test_db) if $self->mode eq 'test';
-
-  my $dsn = $dbi_driver . $self->database() . ';host=' . $self->hostname() . ';port=' . $self->port();
-  my $dbh = DBI->connect($dsn, $self->user()) ||
-    Bio::HPS::FastTrack::Exception::DatabaseConnection->throw(
-							      error => "Error: Could not connect to database '" .
-							      $self->database() . "' on host '" .
-							      $self->hostname . "' on port '" . $self->port . "'\n"
-							     );
-  my $sth = $dbh->prepare($sql);
+  my $sth = $self->connection->prepare($sql);
   $sth->execute();
   while (my $ref = $sth->fetchrow_arrayref()) {
     my $lane = Bio::HPS::FastTrack::VRTrackWrapper::Lane->new(
 							     database => $self->database,
-							     mode => $self->mode,
 							     lane_name => $ref->[0]
-							    )->vrlane;
-    $lanes{$lane->hierarchy_name} = $lane;
+							    );
+    $lanes{$lane->lane_name} = $lane;
   }
   $sth->finish();
-
-  _use_sqllite_test_db($destroy_test_db) if $self->mode eq 'test';
-  $dbh->disconnect();
+  $self->connection->disconnect();
 
   return \%lanes;
 }
@@ -134,19 +110,6 @@ sub _prepare_sql_study_name_string {
   my ($study_name) = @_;
   return(q(') . $study_name . q(%'));
 }
-
-sub _use_sqllite_test_db {
-
-  my ($file) = @_;
-  my $dsn = 'DBI:SQLite:dbname=t/data/database/test.db';
-  my $dbh = DBI->connect($dsn);
-  my @sql = read_file($file);
-  for my $stmt (@sql) {
-    $dbh->do($stmt);
-  }
-  $dbh->disconnect();
-}
-
 
 no Moose;
 __PACKAGE__->meta->make_immutable;

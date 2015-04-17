@@ -16,11 +16,11 @@ use Bio::HPS::FastTrack::Types::FastTrackTypes;
 
 
 has 'database' => ( is => 'rw', isa => 'Str', required => 1 );
-has 'mode' => ( is => 'rw', isa => 'RunMode', required => 1 );
 has 'hostname' => ( is => 'rw', isa => 'Str', lazy => 1, default => 'patt-db' ); #Test database at the moment, when in production change to 'mcs17'
 has 'port' => ( is => 'rw', isa => 'Int', lazy => 1, default => '3346' ); #Test port at the moment, when in production change to '3347'
 has 'user' => ( is => 'rw', isa => 'Str', lazy => 1, default => 'pathpipe_ro' );
 has 'vrtrack' => ( is => 'rw', isa => 'VRTrack::VRTrack', builder => '_build_vrtrack_instance' );
+has 'connection' => ( is => 'rw', isa => 'DBI::db', lazy => 1, builder => '_build_connection' );
 
 sub _build_vrtrack_instance {
 
@@ -36,9 +36,9 @@ sub _build_vrtrack_instance {
   return $vrtrack;
 }
 
-sub _dbh {
+sub _build_connection {
   my ($self) = @_;
-  my $dbi_driver = $self->mode() eq 'prod' ? 'DBI:mysql:database=' : 'DBI:SQLite:dbname=';
+  my $dbi_driver = 'DBI:mysql:database=';
   my $dsn = $dbi_driver . $self->database() . ';host=' . $self->hostname() . ';port=' . $self->port();
   my $dbh = DBI->connect($dsn, $self->user()) ||
     Bio::HPS::FastTrack::Exception::DatabaseConnection->throw(
