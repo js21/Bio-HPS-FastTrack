@@ -4,7 +4,7 @@ package Bio::HPS::FastTrack::VRTrackWrapper::Study;
 
 =head1 SYNOPSIS
 
-my $study = Bio::HPS::FastTrack::VRTrackWrapper::Study->new(study => 2027, database => 'pathogen_prok_track_test' ), 'Study object creation' );
+my $study = Bio::HPS::FastTrack::VRTrackWrapper::Study->new( study => 'Comparative RNA-seq analysis of three bacterial species' , database => 'pathogen_hpsft_test', mode => 'test' );
 
 =cut
 

@@ -5,9 +5,10 @@ package Bio::HPS::FastTrack::VRTrackWrapper::Lane;
 =head1 SYNOPSIS
 
 my $hps_lane = Bio::HPS::FastTrack::VRTrackWrapper::Lane->new(
-							     database => 'pathogen_prok_track_test',
-							     lane_name => '7229_2#35',
-							    );
+							      database => 'pathogen_prok_track_test',
+							      lane_name => '7229_2#35',
+                                                              mode => 'test',
+							     );
 
 
 =cut
@@ -74,15 +75,6 @@ sub _wrap_in_single_quotes {
   my $wrapped_string = q(') . $string_to_wrap . q(');
   return $wrapped_string;
 }
-
-sub _get_user_input_not_used {
-
-    print "The study for this lane was not found in the database. Please specify the study name for this lane bellow, so it can be retrieved from SequenceScape\n";
-    my $user_input = <STDIN>;
-    chomp($user_input);
-    return( $user_input );
-}
-
 
 no Moose;
 __PACKAGE__->meta->make_immutable;

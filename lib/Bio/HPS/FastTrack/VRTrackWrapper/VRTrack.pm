@@ -4,31 +4,41 @@ package Bio::HPS::FastTrack::VRTrackWrapper::VRTrack;
 
 =head1 SYNOPSIS
 
-my $hps_vrtrack = Bio::HPS::FastTrack::VRTrackWrapper::VRTrack->new(host => 'host', => port => 'port', database => 'database', user => 'user');
+my $hps_vrtrack = Bio::HPS::FastTrack::VRTrackWrapper::VRTrack->new( database => 'database', mode => 'test');
 
 =cut
 
 use Moose;
 use lib "/software/pathogen/internal/pathdev/vr-codebase/modules";
 use DBI;
+use File::Slurp;
+use YAML::XS;
 use VRTrack::VRTrack;
 use Bio::HPS::FastTrack::Types::FastTrackTypes;
 
-
 has 'database' => ( is => 'rw', isa => 'Str', required => 1 );
-has 'hostname' => ( is => 'rw', isa => 'Str', lazy => 1, default => 'patt-db' ); #Test database at the moment, when in production change to 'mcs17'
-has 'port' => ( is => 'rw', isa => 'Int', lazy => 1, default => '3346' ); #Test port at the moment, when in production change to '3347'
-has 'user' => ( is => 'rw', isa => 'Str', lazy => 1, default => 'pathpipe_ro' );
-has 'vrtrack' => ( is => 'rw', isa => 'VRTrack::VRTrack', builder => '_build_vrtrack_instance' );
+has 'mode' => ( is => 'rw', isa => 'RunMode', default => 'prod');
+has 'filename' => ( is => 'rw', isa => 'Str', default => 'database.yml' );
+has 'settings' => ( is => 'rw', isa => 'HashRef', builder => '_build_settings' );
+has 'vrtrack' => ( is => 'rw', isa => 'VRTrack::VRTrack', lazy => 1, builder => '_build_vrtrack_instance' );
+
+sub _build_settings {
+
+  my ($self) = @_;
+  my ($settings) = Load( scalar read_file("config/".$self->mode."/".$self->filename.""));
+  return $settings;
+
+}
 
 sub _build_vrtrack_instance {
 
   my ($self) = @_;
+  my $mode = $self->mode;
   my %db_params = (
-		    host => $self->hostname,
-		    port => $self->port,
+		    host => $self->settings->{$mode}->{'host'},
+		    port => $self->settings->{$mode}->{'port'},
 		    database => $self->database,
-		    user => $self->user,
+		    user => $self->settings->{$mode}->{'user'},
 		    password => ''
 		   );
   my $vrtrack = VRTrack::VRTrack->new(\%db_params);

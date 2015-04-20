@@ -14,12 +14,13 @@ use Bio::HPS::FastTrack::VRTrackWrapper::Lane;
 use Bio::HPS::FastTrack::Types::FastTrackTypes;
 use Bio::HPS::FastTrack::Exception;
 
-#has 'root' => ( is => 'ro', isa => 'Str', default => '/nfs/pathnfs05/conf/' );
-has 'root' => ( is => 'ro', isa => 'Str', default => '/lustre/scratch108/pathogen/js21/conf/' );
+has 'root' => ( is => 'ro', isa => 'Str', default => '/nfs/pathnfs05/conf/' );
+#has 'root' => ( is => 'ro', isa => 'Str', default => '/lustre/scratch108/pathogen/js21/conf/' );
 has 'pipeline_exec' => ( is => 'ro', isa => 'Str', default => '' );
 has 'pipeline_stage' => ( is => 'ro', isa => 'Str', default => '' );
 
 has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
+has 'mode' => ( is => 'rw', isa => 'RunMode', required => 1);
 has 'study' => ( is => 'rw', isa => 'Str', lazy => 1, default => '' );
 has 'lane' => ( is => 'rw', isa => 'Str', lazy => 1, default => '');
 
@@ -66,7 +67,7 @@ sub _build_db_alias {
 sub _build_study_metadata {
 
   my ($self) = @_;
-  my $study = Bio::HPS::FastTrack::VRTrackWrapper::Study->new( study => $self->study(), database => $self->database()  );
+  my $study = Bio::HPS::FastTrack::VRTrackWrapper::Study->new( study => $self->study(), database => $self->database(), mode => $self->mode() );
   $study->lanes();
   return $study;
 }
@@ -74,7 +75,7 @@ sub _build_study_metadata {
 sub _build_lane_metadata {
 
   my ($self) = @_;
-  my $lane = Bio::HPS::FastTrack::VRTrackWrapper::Lane->new(  lane_name => $self->lane(), database => $self->database() );
+  my $lane = Bio::HPS::FastTrack::VRTrackWrapper::Lane->new(  lane_name => $self->lane(), database => $self->database(), mode => $self->mode() );
   unless ( $self->study() ) {
     $self->study($lane->study_name());
   }

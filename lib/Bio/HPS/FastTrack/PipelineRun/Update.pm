@@ -43,8 +43,8 @@ sub _build_command_to_run {
 sub run {
 
   my ($self) = @_;
-  my $command = $self->update_command();
-  print "$command\n";
+  my $command = $self->command_to_run();
+  #print "$command\n";
   #my $output = `cd /software/pathogen/projects/update_pipeline; $command`;
   #print "$output\n";  
 }

@@ -10,11 +10,11 @@ BEGIN {
     use_ok('Bio::HPS::FastTrack::SetPipeline');
   }
 
-ok (my $bogus_pipeline = Bio::HPS::FastTrack::SetPipeline->new( study => 2027, database => 'pathogen_prok_track_test', pipeline => ['blah'], mode => 'prod' ), "Bogus object creation");
+ok (my $bogus_pipeline = Bio::HPS::FastTrack::SetPipeline->new( study => 'Comparative RNA-seq analysis of three bacterial species', database => 'pathogen_hpsft_test', pipeline => ['blah'], mode => 'test' ), "Bogus object creation");
 throws_ok { $bogus_pipeline->pipeline_runners() } qr/Error: The requested pipeline is not supported/ ,
   'Non existent pipeline exception thrown' ;
 
-ok (my $pipeline = Bio::HPS::FastTrack::SetPipeline->new( study => 2027, database => 'pathogen_prok_track_test', pipeline => ['update','import','qc','mapping','assembly','annotation','snp-calling','rna-seq'], mode => 'prod' ), 'Object Creation');
+ok (my $pipeline = Bio::HPS::FastTrack::SetPipeline->new( study => 'Comparative RNA-seq analysis of three bacterial species', database => 'pathogen_hpsft_test', pipeline => ['update','import','qc','mapping','assembly','annotation','snp-calling','rna-seq'], mode => 'test' ), 'Object Creation');
 isa_ok ( $pipeline, 'Bio::HPS::FastTrack::SetPipeline', 'SetPipeline module hook' );
 is (scalar @{$pipeline->pipeline_runners()}, 8, 'All pipelines will be run');
 isa_ok ( $pipeline->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::Update');

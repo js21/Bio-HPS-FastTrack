@@ -21,15 +21,14 @@ local $ENV{PATH} = "$ENV{PATH}:./bin";
 my %scripts_and_expected_files;
 
 
-my @params = ('-s', 'Comparative RNA-seq analysis of three bacterial species','-d','pathogen_hpsft_test');
+my @params = ('-s', 'Comparative RNA-seq analysis of three bacterial species','-d','pathogen_hpsft_test','-m','test');
 
 my $cmd = "$script_name->new(args => \\\@params, script_name => '$script_name')->run;";
-print "$cmd\n";
 eval($cmd);
 my $output = $@;
 is($output, "Error: No pipeline was specified through the command line option -p. Usage can be accessed through the -h option.\n", 'No pipeline specified');
 
-@params = ('-s','Comparative RNA-seq analysis of three bacterial species','-d','pathogen_hpsft_test','-p','update');
+@params = ('-s','Comparative RNA-seq analysis of three bacterial species','-d','pathogen_hpsft_test','-p','update','-m','test');
 $cmd = "$script_name->new(args => \\\@params, script_name => '$script_name')->run;";
 eval($cmd);
 $output = $@;
@@ -51,7 +50,7 @@ Utility script to fast track high priority samples through the Pathogen Informat
 
 USAGE
 
-$cmd = "$script_name->new(args => \\\@params, script_name => '$script_name')->run;";
+$cmd = "$script_name->new(args => \\\@params, script_name => '$script_name','-m','test')->run;";
 eval($cmd);
 $output = $@;
 is($output, $expected_usage, "Usage");
