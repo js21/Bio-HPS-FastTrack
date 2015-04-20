@@ -61,7 +61,7 @@ select p.`name` from latest_project as p
 where p.`name` like $sql_study_name_regex
 END_OF_SQL
 
-  my $sth = $self->connection->prepare($sql);
+  my $sth = $self->vrtrack->{_dbh}->prepare($sql);
   $sth->execute();
   my $ref = $sth->fetchrow_arrayref();
 
@@ -90,7 +90,7 @@ group by la.`name`
 order by la.`name`;
 END_OF_SQL
 
-  my $sth = $self->connection->prepare($sql);
+  my $sth = $self->vrtrack->{_dbh}->prepare($sql);
   $sth->execute();
   while (my $ref = $sth->fetchrow_arrayref()) {
     my $lane = Bio::HPS::FastTrack::VRTrackWrapper::Lane->new(
@@ -100,7 +100,7 @@ END_OF_SQL
     $lanes{$lane->lane_name} = $lane;
   }
   $sth->finish();
-  $self->connection->disconnect();
+  $self->vrtrack->{_dbh}->disconnect();
 
   return \%lanes;
 }

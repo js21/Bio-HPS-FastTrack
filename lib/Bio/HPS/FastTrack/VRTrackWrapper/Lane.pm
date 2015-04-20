@@ -44,9 +44,9 @@ inner join latest_project as p on (p.`project_id` = s.`project_id`)
 where la.`name` = $lane_name;
 END_OF_SQL
 
-  $self->connection();
+  $self->vrtrack();
 
-  my $sth = $self->connection->prepare($sql);
+  my $sth = $self->vrtrack->{_dbh}->prepare($sql);
   $sth->execute();
 
   my $study_name;
@@ -54,7 +54,7 @@ END_OF_SQL
     $study_name = $ref->[0];
   }
   $sth->finish();
-  $self->connection->disconnect();
+  $self->vrtrack->{_dbh}->disconnect();
 
   if (defined $study_name && $study_name ne q()) {
     return( $study_name );

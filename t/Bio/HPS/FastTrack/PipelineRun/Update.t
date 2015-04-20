@@ -29,10 +29,13 @@ print Dumper($update_runner);
 #ok( my $update_runner2 = Bio::HPS::FastTrack::PipelineRun::Update->new( lane => '15360_1#1', database => 'pathogen_hpsft_test' ), 'Creating an Update runner2 object');
 ok( my $update_runner2 = Bio::HPS::FastTrack::PipelineRun::Update->new( lane => '8405_4#7', database => 'pathogen_hpsft_test' ), 'Creating an Update runner2 object');
 isa_ok ( $update_runner2, 'Bio::HPS::FastTrack::PipelineRun::Update' );
-$update_runner2->run();
+is ( $update_runner2->update_command(),
+     q(/software/pathogen/projects/update_pipeline/bin/update_pipeline.pl -n 'Comparative RNA-seq analysis of three bacterial species' --database=pathogen_hpsft_test -run 8405 -min 8404 -l /lustre/scratch108/pathogen/js21/conf/fast_track/.pathogen_hpsft_test.update_pipeline.lock -nop -v --file_type cram),
+     'Update command to run');
+#$update_runner2->run();
 is ( $update_runner2->lock_file, '/lustre/scratch108/pathogen/js21/conf/fast_track/.pathogen_hpsft_test.update_pipeline.lock', 'Lock file string');
-ok( -e $update_runner2->lock_file, 'Lock file exists');
-print Dumper($update_runner2);
+
+
 
 #=cut
 

@@ -18,10 +18,10 @@ use Bio::HPS::FastTrack::SetPipeline;
 use Bio::HPS::FastTrack::Exception;
 use Bio::HPS::FastTrack::Types::FastTrackTypes;
 
+has 'pipeline'   => ( is => 'rw',  isa => 'Maybe[ArrayRef]', required => 1);
+has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'study' => ( is => 'rw', isa => 'Str', lazy => 1, default => '');
 has 'lane' => ( is => 'rw', isa => 'Str', lazy => 1, default => '');
-has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
-has 'pipeline'   => ( is => 'rw',  isa => 'Maybe[ArrayRef]', default => sub { [] });
 has 'pipeline_runners'   => ( is => 'rw', isa => 'ArrayRef', lazy => 1, builder => '_build_pipeline_runners');
 
 sub run {
@@ -30,10 +30,12 @@ sub run {
 
   for my $pipeline_runner(@{$self->pipeline_runners()}) {
     if ( $self->study() ) {
+      $pipeline_runner->command_to_run();
       $pipeline_runner->run();
     }
     else {
       $pipeline_runner->lane_metadata();
+      $pipeline_runner->command_to_run();
       $pipeline_runner->run();
     }
   }
