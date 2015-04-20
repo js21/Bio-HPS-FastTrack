@@ -4,12 +4,8 @@ package Bio::HPS::FastTrack;
 
 =head1 SYNOPSIS
 
-my $hps_fast_track_bacteria_update_and_import =  Bio::HPS::FastTrack->new( study => 'Comparative RNA-seq analysis of three bacterial species', lane => '7229_2#35' database => 'prokaryotes', pipeline => ['update','import'], mode => 'test' );
-$hps_fast_track_bacteria_update_and_import->study();
-$hps_fast_track_bacteria_update_and_import->database();
-for my $pipeline_run( @{ hps_fast_track_bacteria_update_and_import->pipeline_runners() } ) {
-  $pipeline_run->run();
-}
+my $hps_fast_track_bacteria_update_and_import =  Bio::HPS::FastTrack->new( study => 'My Study', lane => 'My lane' , database => 'My_Database', pipeline => ['update','import'], mode => 'test' );
+$hps_fast_track_bacteria_update_and_import->run;
 
 =cut
 
@@ -20,7 +16,7 @@ use Bio::HPS::FastTrack::Types::FastTrackTypes;
 
 has 'pipeline'   => ( is => 'rw',  isa => 'Maybe[ArrayRef]', required => 1);
 has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
-has 'mode' => ( is => 'rw', isa => 'RunMode', default => 'prod');
+has 'mode' => ( is => 'rw', isa => 'RunMode', required => 1);
 has 'study' => ( is => 'rw', isa => 'Str', lazy => 1, default => '');
 has 'lane' => ( is => 'rw', isa => 'Str', lazy => 1, default => '');
 has 'pipeline_runners'   => ( is => 'rw', isa => 'ArrayRef', lazy => 1, builder => '_build_pipeline_runners');

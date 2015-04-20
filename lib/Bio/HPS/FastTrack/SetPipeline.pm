@@ -1,10 +1,10 @@
 package  Bio::HPS::FastTrack::SetPipeline;
 
-# ABSTRACT: Fast track high priority samples through the Pathogen Informatics pipelines
+# ABSTRACT: Pipeline runner handler. Will return the pipeline handles requested through the -p option
 
 =head1 SYNOPSIS
 
-my $analysis_detector = Bio::HPS::FastTrack::SetPipelines->new( database => 'virus', analysis => ['all'])
+my $analysis_detector = Bio::HPS::FastTrack::SetPipelines->new( study => 'My Study', database => 'My_Database', pipeline => ['My_Pipeline','My_Other_Pipeline'], mode => 'test');
 
 =cut
 

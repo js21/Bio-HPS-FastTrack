@@ -56,4 +56,4 @@ $output = $@;
 is($output, $expected_usage, "Usage");
 
 
-
+done_testing();

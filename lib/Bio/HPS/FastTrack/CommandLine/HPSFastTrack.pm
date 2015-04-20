@@ -1,6 +1,6 @@
 package Bio::HPS::FastTrack::CommandLine::HPSFastTrack;
 
-# ABSTRACT: Fast track high priority samples through the Pathogen Informatics pipelines
+# ABSTRACT: Command line API for the HPS FastTrack application
 
 =head1 SYNOPSIS
 

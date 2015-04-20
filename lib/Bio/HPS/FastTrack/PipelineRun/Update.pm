@@ -1,10 +1,10 @@
 package Bio::HPS::FastTrack::PipelineRun::Update;
 
-# ABSTRACT: Fast track high priority samples through the Pathogen Informatics pipelines
+# ABSTRACT: Update Pipeline runner class. Inherits from PipelineRun class
 
 =head1 SYNOPSIS
 
-my $update_runner = Bio::HPS::FastTrack::PipelineRun::Update->new(study =>  'My Study', lane => 'My lane' , database => 'pathogen_hpsft_test');
+my $update_runner = Bio::HPS::FastTrack::PipelineRun::Update->new(study => 'My Study', lane => 'My lane' , database => 'My_Database', mode => 'test');
 
 =cut
 
@@ -14,8 +14,6 @@ extends('Bio::HPS::FastTrack::PipelineRun::PipelineRun');
 has 'pipeline_exec' => ( is => 'ro', isa => 'Str', default => '/software/pathogen/projects/update_pipeline/bin/update_pipeline.pl' );
 has 'pipeline_stage' => ( is => 'ro', isa => 'Str', default => 'update_pipeline' );
 has 'command_to_run' => ( is => 'rw', isa => 'Str', lazy => 1, builder => '_build_command_to_run' );
-
-
 
 sub _build_command_to_run {
 
@@ -44,9 +42,8 @@ sub run {
 
   my ($self) = @_;
   my $command = $self->command_to_run();
-  #print "$command\n";
-  #my $output = `cd /software/pathogen/projects/update_pipeline; $command`;
-  #print "$output\n";  
+  my $output = `cd /software/pathogen/projects/update_pipeline; $command`;
+  print "$output\n";
 }
 
 

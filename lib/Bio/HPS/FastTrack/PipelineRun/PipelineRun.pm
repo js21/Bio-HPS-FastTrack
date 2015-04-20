@@ -1,10 +1,10 @@
 package Bio::HPS::FastTrack::PipelineRun::PipelineRun;
 
-# ABSTRACT: Fast track high priority samples through the Pathogen Informatics pipelines
+# ABSTRACT: Parent class from which all pipeline runners inherit from.
 
 =head1 SYNOPSIS
 
-my $mapping_analysis_runner = Bio::HPS::FastTrack::PipelineRun::PipelineRun->new( database => 'pathogen_prok_track_test')
+my $mapping_analysis_runner = Bio::HPS::FastTrack::PipelineRun::PipelineRun->new(study => 'My Study', lane => 'My lane' , database => 'My_Database');
 
 =cut
 
@@ -15,7 +15,6 @@ use Bio::HPS::FastTrack::Types::FastTrackTypes;
 use Bio::HPS::FastTrack::Exception;
 
 has 'root' => ( is => 'ro', isa => 'Str', default => '/nfs/pathnfs05/conf/' );
-#has 'root' => ( is => 'ro', isa => 'Str', default => '/lustre/scratch108/pathogen/js21/conf/' );
 has 'pipeline_exec' => ( is => 'ro', isa => 'Str', default => '' );
 has 'pipeline_stage' => ( is => 'ro', isa => 'Str', default => '' );
 

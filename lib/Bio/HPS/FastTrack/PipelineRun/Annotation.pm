@@ -1,19 +1,19 @@
 package Bio::HPS::FastTrack::PipelineRun::Annotation;
 
-# ABSTRACT: Fast track high priority samples through the Pathogen Informatics pipelines
+# ABSTRACT: Annotation pipeline runner class. Inherits from the parent class PipelineRun
 
 =head1 SYNOPSIS
 
-my $annotation_runner = Bio::HPS::FastTrack::PipelineRun::Annotation->new( database => 'virus')
+my $annotation_runner = Bio::HPS::FastTrack::PipelineRun::Annotation->new(study => 'My Study', lane => 'My lane' , database => 'My_Database', mode => 'test');
 
 =cut
 
 use Moose;
 extends('Bio::HPS::FastTrack::PipelineRun::PipelineRun');
 
-has 'stage_done'   => ( is => 'ro', isa => 'Str', default => 'annotated');
-has 'stage_not_done'   => ( is => 'ro', isa => 'Str', default => 'not annotated');
-has 'add_to_config_path' => ( is => 'ro', isa => 'Str', default => 'annotate_assembly');
+has 'pipeline_exec' => ( is => 'ro', isa => 'Str', default => '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline' );
+has 'pipeline_stage' => ( is => 'ro', isa => 'Str', default => 'annotate_assembly_pipeline' );
+has 'command_to_run' => ( is => 'rw', isa => 'Str', lazy => 1, builder => '_build_command_to_run' );
 
 no Moose;
 __PACKAGE__->meta->make_immutable;

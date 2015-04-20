@@ -1,19 +1,19 @@
 package Bio::HPS::FastTrack::PipelineRun::Mapping;
 
-# ABSTRACT: Fast track high priority samples through the Pathogen Informatics pipelines
+# ABSTRACT: Mapping pipeline runner class. Inherits from the parent class PipelineRun
 
 =head1 SYNOPSIS
 
-my $mapping_runner = Bio::HPS::FastTrack::PipelineRun::Mapping->new(study =>  2027, database => 'pathogen_prok_track_test');
+my $mapping_runner = Bio::HPS::FastTrack::PipelineRun::Mapping->new(study => 'My Study', lane => 'My lane' , database => 'My_Database', mode => 'test');
 
 =cut
 
 use Moose;
 extends('Bio::HPS::FastTrack::PipelineRun::PipelineRun');
 
-has 'stage_done'   => ( is => 'ro', isa => 'Str', default => 'mapped');
-has 'stage_not_done'   => ( is => 'ro', isa => 'Str', default => 'not mapped');
-has 'add_to_config_path' => ( is => 'ro', isa => 'Str', default => 'mapping');
+has 'pipeline_exec' => ( is => 'ro', isa => 'Str', default => '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline' );
+has 'pipeline_stage' => ( is => 'ro', isa => 'Str', default => 'mapping_pipeline' );
+has 'command_to_run' => ( is => 'rw', isa => 'Str', lazy => 1, builder => '_build_command_to_run' );
 
 
 no Moose;
