@@ -9,6 +9,7 @@ BEGIN {
     use_ok('Bio::HPS::FastTrack::PipelineRun::Update');
   }
 
+
 ok( my $update_runner = Bio::HPS::FastTrack::PipelineRun::Update->new( study => 'MRSA studies', lane => '15360_1#1', database => 'pathogen_hpsft_test', mode => 'prod' ), 'Creating an Update runner object');
 isa_ok ( $update_runner, 'Bio::HPS::FastTrack::PipelineRun::Update' );
 is ( $update_runner->command_to_run(),

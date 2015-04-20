@@ -27,10 +27,12 @@ sub run {
 
   for my $pipeline_runner(@{$self->pipeline_runners()}) {
     if ( $self->study() ) {
+      $pipeline_runner->set_config_files() unless $self->pipeline eq 'update'
       $pipeline_runner->command_to_run();
       $pipeline_runner->run() if $self->mode() eq 'prod';
     }
     else {
+      $pipeline_runner->set_config_files() unless $self->pipeline eq 'update'
       $pipeline_runner->lane_metadata();
       $pipeline_runner->command_to_run();
       $pipeline_runner->run() if $self->mode() eq 'prod';

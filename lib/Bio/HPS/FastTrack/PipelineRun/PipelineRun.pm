@@ -9,6 +9,7 @@ my $mapping_analysis_runner = Bio::HPS::FastTrack::PipelineRun::PipelineRun->new
 =cut
 
 use Moose;
+use Bio::HPS::FastTrack::SetConfig;
 use Bio::HPS::FastTrack::VRTrackWrapper::Study;
 use Bio::HPS::FastTrack::VRTrackWrapper::Lane;
 use Bio::HPS::FastTrack::Types::FastTrackTypes;
@@ -28,6 +29,7 @@ has 'db_alias' => ( is => 'rw', isa => 'Str', builder => '_build_db_alias' );
 has 'lock_file' => ( is => 'rw', isa => 'Str', lazy => 1, builder => '_build_lock_file' );
 has 'study_metadata' => ( is => 'rw', isa => 'Bio::HPS::FastTrack::VRTrackWrapper::Study', lazy => 1, builder => '_build_study_metadata' );
 has 'lane_metadata' => ( is => 'rw', isa => 'Bio::HPS::FastTrack::VRTrackWrapper::Lane', lazy => 1, builder => '_build_lane_metadata' );
+has 'config_files' => ( is => 'rw', isa => 'Bio::HPS::FastTrack::Config', lazy => 1, builder => '_build_config_files' );
 
 sub run {
 
@@ -92,6 +94,20 @@ sub _build_lock_file {
     $lock_file = $self->root() . $self->db_alias() . q(/.) . $self->database() . q(.) . $self->pipeline_stage() . q(.lock);
   }
   return $lock_file;
+}
+
+sub _build_config_files {
+
+  my ($self) = @_;
+  return Bio::HPS::FastTrack::SetConfig->new(
+					  study => $self->study(),
+					  lane => $self->lane(),
+					  database => $self->database(),
+					  pipeline_stage => $self->pipeline_stage(),
+					  db_alias => $self->db_alias,
+					  root => $self->root(),
+					  mode => $self->mode()
+					 )->config_files();
 }
 
 no Moose;
