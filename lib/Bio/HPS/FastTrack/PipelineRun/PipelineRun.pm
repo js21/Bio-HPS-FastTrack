@@ -18,6 +18,7 @@ use Bio::HPS::FastTrack::Exception;
 has 'root' => ( is => 'ro', isa => 'Str', default => '/nfs/pathnfs05/conf/' );
 has 'pipeline_exec' => ( is => 'ro', isa => 'Str', default => '' );
 has 'pipeline_stage' => ( is => 'ro', isa => 'Str', default => '' );
+has 'sleep_time' => ( is => 'rw', isa => 'Int', lazy => 1, default => 120 );
 
 has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'mode' => ( is => 'rw', isa => 'RunMode', required => 1);
@@ -29,7 +30,7 @@ has 'db_alias' => ( is => 'rw', isa => 'Str', builder => '_build_db_alias' );
 has 'lock_file' => ( is => 'rw', isa => 'Str', lazy => 1, builder => '_build_lock_file' );
 has 'study_metadata' => ( is => 'rw', isa => 'Bio::HPS::FastTrack::VRTrackWrapper::Study', lazy => 1, builder => '_build_study_metadata' );
 has 'lane_metadata' => ( is => 'rw', isa => 'Bio::HPS::FastTrack::VRTrackWrapper::Lane', lazy => 1, builder => '_build_lane_metadata' );
-has 'config_files' => ( is => 'rw', isa => 'Bio::HPS::FastTrack::Config', lazy => 1, builder => '_build_config_files' );
+has 'config_files' => ( is => 'rw', isa => 'HashRef', lazy => 1, builder => '_build_config_files' );
 
 sub run {
 

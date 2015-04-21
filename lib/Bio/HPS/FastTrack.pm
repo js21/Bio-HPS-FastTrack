@@ -19,6 +19,7 @@ has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'mode' => ( is => 'rw', isa => 'RunMode', required => 1);
 has 'study' => ( is => 'rw', isa => 'Str', lazy => 1, default => '');
 has 'lane' => ( is => 'rw', isa => 'Str', lazy => 1, default => '');
+has 'sleep_time' => ( is => 'rw', isa => 'Int', lazy => 1, default => 120 );
 has 'pipeline_runners'   => ( is => 'rw', isa => 'ArrayRef', lazy => 1, builder => '_build_pipeline_runners');
 
 sub run {
@@ -27,12 +28,12 @@ sub run {
 
   for my $pipeline_runner(@{$self->pipeline_runners()}) {
     if ( $self->study() ) {
-      $pipeline_runner->set_config_files() unless $self->pipeline eq 'update'
+      $pipeline_runner->config_files() unless $self->pipeline eq 'update';
       $pipeline_runner->command_to_run();
       $pipeline_runner->run() if $self->mode() eq 'prod';
     }
     else {
-      $pipeline_runner->set_config_files() unless $self->pipeline eq 'update'
+      $pipeline_runner->config_files() unless $self->pipeline eq 'update';
       $pipeline_runner->lane_metadata();
       $pipeline_runner->command_to_run();
       $pipeline_runner->run() if $self->mode() eq 'prod';
@@ -47,6 +48,7 @@ sub _build_pipeline_runners {
 					       lane => $self->lane(),
 					       pipeline => $self->pipeline(),
 					       database => $self->database(),
+					       sleep_time => $self->sleep_time(),
 					       mode => $self->mode()
 					      )->pipeline_runners();
 }

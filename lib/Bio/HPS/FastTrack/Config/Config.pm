@@ -21,11 +21,20 @@ has 'root'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'pipeline_stage'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'mode'   => ( is => 'rw', isa => 'RunMode', required => 1 );
 has 'config_files' => ( is => 'rw', isa => 'HashRef', lazy => 1, builder => '_build_config_files');
+has 'log_root' => ( is => 'ro', isa => 'Str', default => '/nfs/pathnfs05/log/' );
 
 sub run {
 
   my ($self) = @_;
   return 1;
+
+}
+
+sub _build_config_files {
+
+  my ($self) = @_;
+  my %config_files;
+  return \%config_files;
 
 }
 

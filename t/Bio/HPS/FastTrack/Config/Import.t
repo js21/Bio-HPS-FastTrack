@@ -10,7 +10,7 @@ BEGIN {
     use_ok('Bio::HPS::FastTrack::Config::Import');
   }
 
-my $import_config = Bio::HPS::FastTrack::Config::Import->new(
+ok (my $import_config = Bio::HPS::FastTrack::Config::Import->new(
 							     study => 'MRSA studies',
 							     lane => '15360_1#1',
 							     database => 'pathogen_hpsft_test',
@@ -18,13 +18,37 @@ my $import_config = Bio::HPS::FastTrack::Config::Import->new(
 							     root => '/nfs/pathnfs05/conf/',
 							     pipeline_stage => 'import_cram',
 							     mode => 'test'
-							    );
-$import_config->config_files();
+							    ),
+    'Import lane for study config object creation');
+
+ok ( $import_config->config_files(), 'Set configuration files for import');
+ok ( -e $import_config->config_files->{'low_level'}, 'Low level config file in place' );
 
 my @lines = read_file( $import_config->config_files->{'low_level'} ) ;
-print Dumper(\@lines);
 
-print Dumper($import_config);
+is ($lines[2], qq(            'database' => 'pathogen_hpsft_test',\n), 'Database in place');
+is ($lines[21], qq(  'log' => '/nfs/pathnfs05/log/fast_track/import_cram_logfile.log',\n), 'Log in place');
+is ($lines[24], qq(                               '15360_1#1'\n), 'Lane in place' );
+
 my $dir_to_remove = $import_config->config_files->{'tempdir'};
 `rm -rf $dir_to_remove`;
+
+my $import_config2 = Bio::HPS::FastTrack::Config::Import->new(
+							     study => 'MRSA studies',
+							     database => 'pathogen_hpsft_test',
+							     db_alias => 'fast_track',
+							     root => '/nfs/pathnfs05/conf/',
+							     pipeline_stage => 'import_cram',
+							     mode => 'test'
+							    );
+$import_config2->config_files();
+
+my @lines2 = read_file( $import_config2->config_files->{'low_level'} ) ;
+is ($lines[2], qq(            'database' => 'pathogen_hpsft_test',\n), 'Database in place');
+is ($lines[21], qq(  'log' => '/nfs/pathnfs05/log/fast_track/import_cram_logfile.log',\n), 'Log in place');
+is ($lines2[24], qq(                               'MRSA\\ studies'\n), 'Lane in place' );
+
+my $dir_to_remove2 = $import_config2->config_files->{'tempdir'};
+`rm -rf $dir_to_remove2`;
+
 done_testing();
