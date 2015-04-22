@@ -26,9 +26,6 @@ sub _build_command_to_run {
   my $command_to_run = $self->pipeline_exec . q( -c ) . $self->config_files->{'high_level'} . q( -l ) . $self->config_files->{'log_file'};
   $command_to_run .= q( -o -v -v -L ) . $self->lock_file;
   $command_to_run .= q( -m 500);
-  if ($self->mode eq 'test') {
-    print "$command_to_run\n";
-  }
   return $command_to_run;
 }
 

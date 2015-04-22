@@ -100,6 +100,8 @@ sub _build_lock_file {
 sub _build_config_files {
 
   my ($self) = @_;
+  my %no_config;
+  return \%no_config if $self->pipeline_stage eq 'update_pipeline';
   return Bio::HPS::FastTrack::SetConfig->new(
 					  study => $self->study(),
 					  lane => $self->lane(),

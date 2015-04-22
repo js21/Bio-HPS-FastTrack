@@ -53,7 +53,7 @@ sub BUILD {
 sub run {
     my ($self) = @_;
 
-    ( ($self->study || $self->lane) && $self->database && $self->pipeline ) or die die_with_usage();
+    ( ($self->study || $self->lane) && $self->database && scalar @{$self->pipeline} > 0 ) or die die_with_usage();
 
     my $hps_fast_track = Bio::HPS::FastTrack->new(
 						  study => $self->study,
@@ -63,7 +63,6 @@ sub run {
 						  sleep_time => $self->sleep_time,
 						  mode => $self->mode,
 						 );
-
     $hps_fast_track->run;
 }
 

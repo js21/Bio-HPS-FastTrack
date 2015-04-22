@@ -106,6 +106,7 @@ sub _pipeline_config_files_templates {
 											 )->config_files(),
 		  );
 
+  Bio::HPS::FastTrack::Exception::NoPipelineSpecified->throw( error => "Error: No pipeline was specified through the command line option -p. Usage can be accessed through the -h option.\n" ) if !defined $templates{$self->pipeline_stage};
   return $templates{$self->pipeline_stage};
 
 }

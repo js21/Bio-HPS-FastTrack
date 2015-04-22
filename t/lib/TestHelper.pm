@@ -28,7 +28,6 @@ sub mock_execute_script_and_check_multiple_file_output {
             my @input_args = split( " ", $full_script );
 
             my $cmd = "$script_name->new(args => \\\@input_args, script_name => '$script_name')->run;";
-	    print "@input_args\n";
             eval($cmd);
             warn $@ if $@;
 	    for my $arr_ref( @{ $scripts_and_expected_files->{$script_parameters} } ) {
