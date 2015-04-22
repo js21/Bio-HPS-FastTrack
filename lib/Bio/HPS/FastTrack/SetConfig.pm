@@ -33,7 +33,7 @@ has 'config_files' => ( is => 'rw', isa => 'HashRef', lazy => 1, builder => '_bu
 sub _build_config_files {
 
   my ($self) = @_;
-  return _pipeline_config_files_templates($self);
+  return _pipeline_config_files_templates($self)->config_files();
 }
 
 sub _pipeline_config_files_templates {
@@ -49,7 +49,7 @@ sub _pipeline_config_files_templates {
 										      root => $self->root(),
 										      pipeline_stage => $self->pipeline_stage(),
 										      mode => $self->mode()
-										     )->config_files(),
+										     ),
 		   'qc_pipeline' => Bio::HPS::FastTrack::Config::QC->new(
 									 study => $self->study(),
 									 lane => $self->lane(),
@@ -58,7 +58,7 @@ sub _pipeline_config_files_templates {
 									 root => $self->root(),
 									 pipeline_stage => $self->pipeline_stage(),
 									 mode => $self->mode()
-									)->config_files(),
+									),
 		   'mapping_pipeline' => Bio::HPS::FastTrack::Config::Mapping->new(
 										   study => $self->study(),
 										   lane => $self->lane(),
@@ -67,7 +67,7 @@ sub _pipeline_config_files_templates {
 										   root => $self->root(),
 										   pipeline_stage => $self->pipeline_stage(),
 										   mode => $self->mode()
-										  )->config_files(),
+										  ),
 		   'assembly_pipeline' => Bio::HPS::FastTrack::Config::Assembly->new(
 										     study => $self->study(),
 										     lane => $self->lane(),
@@ -76,7 +76,7 @@ sub _pipeline_config_files_templates {
 										     root => $self->root(),
 										     pipeline_stage => $self->pipeline_stage(),
 										     mode => $self->mode()
-										    )->config_files(),
+										    ),
 		   'annotate_assembly_pipeline' => Bio::HPS::FastTrack::Config::Annotation->new(
 												study => $self->study(),
 												lane => $self->lane(),
@@ -85,7 +85,7 @@ sub _pipeline_config_files_templates {
 												root => $self->root(),
 												pipeline_stage => $self->pipeline_stage(),
 												mode => $self->mode()
-											       )->config_files(),
+											       ),
 		   'snps_pipeline' => Bio::HPS::FastTrack::Config::SNPCalling->new(
 										   study => $self->study(),
 										   lane => $self->lane(),
@@ -94,7 +94,7 @@ sub _pipeline_config_files_templates {
 										   root => $self->root(),
 										   pipeline_stage => $self->pipeline_stage(),
 										   mode => $self->mode()
-										  )->config_files(),
+										  ),
 		   'rna_seq_pipeline' => Bio::HPS::FastTrack::Config::RNASeqAnalysis->new(
 											  study => $self->study(),
 											  lane => $self->lane(),
@@ -103,9 +103,10 @@ sub _pipeline_config_files_templates {
 											  root => $self->root(),
 											  pipeline_stage => $self->pipeline_stage(),
 											  mode => $self->mode()
-											 )->config_files(),
+											 ),
 		  );
 
+  print("PIPELINE: ", $self->pipeline_stage, "\n");
   Bio::HPS::FastTrack::Exception::NoPipelineSpecified->throw( error => "Error: No pipeline was specified through the command line option -p. Usage can be accessed through the -h option.\n" ) if !defined $templates{$self->pipeline_stage};
   return $templates{$self->pipeline_stage};
 
