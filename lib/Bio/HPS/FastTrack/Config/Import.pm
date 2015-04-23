@@ -12,13 +12,31 @@ use Moose;
 use File::Slurp;
 extends('Bio::HPS::FastTrack::Config::Config');
 
-has 'config_template' => ( is => 'ro', isa => 'Str', default => '/nfs/pathnfs05/conf/prokaryotes/import_cram/import_cram_global.conf' );
+has 'suffix_for_config_path' => ( is => 'rw', isa => 'Str', builder => '_build_suffix_for_config_path' );
+has 'config_template' => ( is => 'rw', isa => 'Str', lazy => 1, builder => '_build_config_template' );
+
+sub _build_suffix_for_config_path {
+
+  my ($self) = @_;
+  return $self->db_alias() eq 'no alias' ? $self->database() : $self->db_alias();;
+}
+
+
+sub _build_config_template {
+
+  my ($self) = @_;
+  return ($self->root . $self->suffix_for_config_path . '/import_cram/import_cram_global.conf') if $self->mode eq 'test';
+  return ($self->root . 'prokaryotes/import_cram/import_cram_global.conf');
+}
+
 
 sub _build_config_files {
 
   my ($self) = @_;
-  my $dir = File::Temp->newdir($self->root . 'XXXX', CLEANUP => 0);
+
   my $suffix_for_config_path = $self->db_alias() eq 'no alias' ? $self->database() : $self->db_alias();
+  my $dir = File::Temp->newdir($self->root . $suffix_for_config_path . q(/) . 'XXXX', CLEANUP => 0);
+
 
   my $high_level_path = $dir->dirname . q(/) . $self->pipeline_stage . q(_) . $suffix_for_config_path . q(.conf);
   my $low_level_path = $dir->dirname . q(/) . 'import_cram_global' . q(.conf);
@@ -63,8 +81,12 @@ sub _write_low_level_conf_file {
       $line =~ s/'port' => '3347'/'port' => '3346'/;
       $line =~ s/'host' => 'patp-db'/'host' => 'patt-db'/;
     }
+
     $line =~ s/('database' => ')[a-z_]*/$1$database/;
-    $line =~ s/(\/nfs\/pathnfs05\/log\/)[a-z_]*(\/import_cram_logfile.log)/$1$suffix_for_config_path$2/;
+
+    my $log_root = $self->log_root;
+    $line =~ s/($log_root)[a-z_]*(\/import_cram_logfile.log)/$1$suffix_for_config_path$2/;
+
     $line =~ s/(\/lustre\/scratch108\/pathogen\/pathpipe\/)[a-z_]*(\/seq-pipelines)/$1$suffix_for_config_path$2/;
 
     if ($line =~ m/\s{2}'root'/) {

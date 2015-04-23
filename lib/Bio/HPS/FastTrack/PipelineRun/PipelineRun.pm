@@ -15,7 +15,8 @@ use Bio::HPS::FastTrack::VRTrackWrapper::Lane;
 use Bio::HPS::FastTrack::Types::FastTrackTypes;
 use Bio::HPS::FastTrack::Exception;
 
-has 'root' => ( is => 'ro', isa => 'Str', default => '/nfs/pathnfs05/conf/' );
+has 'root' => ( is => 'rw', isa => 'Str', default => '/nfs/pathnfs05/conf/' );
+#has 'root' => ( is => 'ro', isa => 'Str', default => '/lustre/scratch108/pathogen/js21/conf/' );
 has 'pipeline_exec' => ( is => 'ro', isa => 'Str', default => '' );
 has 'pipeline_stage' => ( is => 'ro', isa => 'Str', default => '' );
 has 'sleep_time' => ( is => 'rw', isa => 'Int', lazy => 1, default => 120 );

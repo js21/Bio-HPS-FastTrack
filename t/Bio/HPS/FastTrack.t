@@ -61,7 +61,10 @@ ok ( my $hps_fast_track_import_study =  Bio::HPS::FastTrack->new( study => 'Comp
 is ( $hps_fast_track_import_study->database(), 'pathogen_hpsft_test', 'Database name comparison import for study');
 is_deeply ( $hps_fast_track_import_study->pipeline(), ['import'], 'Pipeline types comparison import for study');
 isa_ok ( $hps_fast_track_import_study->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::Import' );
+$hps_fast_track_import_study->pipeline_runners()->[0]->root('t/data/conf/');
 is ( $hps_fast_track_import_study->pipeline_runners()->[0]->study_metadata->study(), 'Comparative RNA-seq analysis of three bacterial species', 'Study name comparison import for study');
+
+#print Dumper($hps_fast_track_import_study);
 
 ok( $hps_fast_track_import_study->pipeline_runners()->[0]->command_to_run, 'Building run command for study import' );
 ok ( -e $hps_fast_track_import_study->pipeline_runners()->[0]->config_files->{'low_level'}, 'Low level config file in place for study import' );
@@ -69,12 +72,12 @@ ok ( -e $hps_fast_track_import_study->pipeline_runners()->[0]->config_files->{'l
 my @lines1 = read_file( $hps_fast_track_import_study->pipeline_runners()->[0]->config_files->{'low_level'} ) ;
 
 is ($lines1[2], qq(            'database' => 'pathogen_hpsft_test',\n), 'Database in place for study import');
-is ($lines1[21], qq(  'log' => '/nfs/pathnfs05/log/fast_track/import_cram_logfile.log',\n), 'Log in place for study import');
+is ($lines1[21], qq(  'log' => 't/data/log/import_cram_logfile.log',\n), 'Log in place for study import');
 is ($lines1[24], qq(                               'Comparative\\ RNA-seq\\ analysis\\ of\\ three\\ bacterial\\ species'\n), 'Project in place for study' );
 
 my $expected_command1 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
 $expected_command1 .= $hps_fast_track_import_study->pipeline_runners()->[0]->config_files->{'tempdir'};
-$expected_command1 .= '/import_cram_pipeline_fast_track.conf -l /nfs/pathnfs05/log/fast_track_import_pipeline.log -v -v -L /nfs/pathnfs05/conf/fast_track/.pathogen_hpsft_test.import_cram_pipeline.lock -m 500';
+$expected_command1 .= '/import_cram_pipeline_fast_track.conf -l t/data/log/fast_track_import_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.import_cram_pipeline.lock -m 500';
 
 is ( $hps_fast_track_import_study->pipeline_runners()->[0]->command_to_run, $expected_command1, 'Command to run import pipeline for study' );
 
@@ -87,6 +90,7 @@ ok ( my $hps_fast_track_import_lane =  Bio::HPS::FastTrack->new( lane => '8405_4
 is ( $hps_fast_track_import_lane->database(), 'pathogen_hpsft_test', 'Database name comparison import for one lane');
 is_deeply ( $hps_fast_track_import_lane->pipeline(), ['import'], 'Pipeline types comparison import for one lane');
 isa_ok ( $hps_fast_track_import_lane->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::Import' );
+$hps_fast_track_import_lane->pipeline_runners()->[0]->root('t/data/conf/');
 is ( $hps_fast_track_import_lane->pipeline_runners()->[0]->lane_metadata->study_name(), 'Comparative RNA-seq analysis of three bacterial species', 'Study name comparison import for one lane');
 
 ok( $hps_fast_track_import_lane->pipeline_runners()->[0]->command_to_run, 'Building run command' );
@@ -95,12 +99,12 @@ ok ( -e $hps_fast_track_import_lane->pipeline_runners()->[0]->config_files->{'lo
 my @lines2 = read_file( $hps_fast_track_import_lane->pipeline_runners()->[0]->config_files->{'low_level'} ) ;
 
 is ($lines2[2], qq(            'database' => 'pathogen_hpsft_test',\n), 'Database in place for lane');
-is ($lines2[21], qq(  'log' => '/nfs/pathnfs05/log/fast_track/import_cram_logfile.log',\n), 'Log in place for lane');
+is ($lines2[21], qq(  'log' => 't/data/log/import_cram_logfile.log',\n), 'Log in place for lane');
 is ($lines2[24], qq(                               '8405_4#7'\n), 'Lane id in place for lane' );
 
 my $expected_command2 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
 $expected_command2 .= $hps_fast_track_import_lane->pipeline_runners()->[0]->config_files->{'tempdir'};
-$expected_command2 .= '/import_cram_pipeline_fast_track.conf -l /nfs/pathnfs05/log/fast_track_import_pipeline.log -v -v -L /nfs/pathnfs05/conf/fast_track/.pathogen_hpsft_test.import_cram_pipeline.lock -m 500';
+$expected_command2 .= '/import_cram_pipeline_fast_track.conf -l t/data/log/fast_track_import_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.import_cram_pipeline.lock -m 500';
 
 is ( $hps_fast_track_import_lane->pipeline_runners()->[0]->command_to_run, $expected_command2, 'Command to run import pipeline for importing one lane' );
 

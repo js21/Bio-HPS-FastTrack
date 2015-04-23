@@ -21,7 +21,7 @@ has 'root'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'pipeline_stage'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'mode'   => ( is => 'rw', isa => 'RunMode', required => 1 );
 has 'config_files' => ( is => 'rw', isa => 'HashRef', lazy => 1, builder => '_build_config_files');
-has 'log_root' => ( is => 'ro', isa => 'Str', default => '/nfs/pathnfs05/log/' );
+has 'log_root' => ( is => 'rw', isa => 'Str', lazy => 1, builder => '_build_log_root' );
 
 sub run {
 
@@ -38,6 +38,12 @@ sub _build_config_files {
 
 }
 
+sub _build_log_root {
+
+  my ($self) = @_;
+  return 't/data/log/' if $self->mode eq 'test';
+  return '/nfs/pathnfs05/log/';
+}
 
 no Moose;
 __PACKAGE__->meta->make_immutable;

@@ -33,7 +33,9 @@ has 'config_files' => ( is => 'rw', isa => 'HashRef', lazy => 1, builder => '_bu
 sub _build_config_files {
 
   my ($self) = @_;
-  return _pipeline_config_files_templates($self)->config_files();
+  my $config = _pipeline_config_files_templates($self);
+  $config->log_root();
+  return $config->config_files();
 }
 
 sub _pipeline_config_files_templates {
@@ -105,8 +107,6 @@ sub _pipeline_config_files_templates {
 											  mode => $self->mode()
 											 ),
 		  );
-
-  print("PIPELINE: ", $self->pipeline_stage, "\n");
   Bio::HPS::FastTrack::Exception::NoPipelineSpecified->throw( error => "Error: No pipeline was specified through the command line option -p. Usage can be accessed through the -h option.\n" ) if !defined $templates{$self->pipeline_stage};
   return $templates{$self->pipeline_stage};
 

@@ -15,11 +15,11 @@ ok (my $pipeline_config = Bio::HPS::FastTrack::SetConfig->new(
 							      database => 'pathogen_hpsft_test',
 							      pipeline_stage => 'import_cram_pipeline',
 							      db_alias => 'fast_track',
-							      root => '/nfs/pathnfs05/conf/',
+							      root => 't/data/conf/',
 							      mode => 'test'
 							     ),
-    'Object Creation');
-$pipeline_config->config_files();
-print Dumper($pipeline_config);
+    'Import Object Creation');
+ok ( $pipeline_config->config_files(), 'Get config files');
+
 
 done_testing();

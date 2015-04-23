@@ -18,6 +18,8 @@ use Exception::Class (
 		      Bio::HPS::FastTrack::Exception::SeveralStudiesForStudyName  => { description => 'Several studies retrieved for the study name string' },
 		      Bio::HPS::FastTrack::Exception::StudyNameNotFoundForLane    => { description => 'Study not present in tracking database. User will have to specify a study name' },
 		      Bio::HPS::FastTrack::Exception::StudyAndLaneNotSpecified    => { description => 'Study and lane parameters need to be specified' },
+		      Bio::HPS::FastTrack::Exception::StudyNotFoundInHighLevelConfig    => { description => 'Study not present in high level config file' },
+		      Bio::HPS::FastTrack::Exception::FeatureNotYetImplemented    => { description => 'Feature not yet implemented, but coming soon' },
 		     );
 
 1;
