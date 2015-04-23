@@ -46,9 +46,6 @@ sub _extract_studies_to_run {
 
   my @lines = read_file($main_high_level_config_path);
 
-  print('STUDY: ',$self->study,"\n");
-  use Data::Dumper;
-  print Dumper(\@lines);
   my $study_string = $self->study;
   $study_string =~ s/\s|-/_/g;
   my @registered_studies;
