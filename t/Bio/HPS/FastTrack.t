@@ -11,7 +11,8 @@ BEGIN {
   use_ok('Bio::HPS::FastTrack');
 }
 
-
+#UPDATE PIPELINE
+print "Update tests\n";
 ok ( my $hps_fast_track_update =  Bio::HPS::FastTrack->new( study => 'Comparative RNA-seq analysis of three bacterial species', database => 'pathogen_hpsft_test', pipeline => ['update'], mode => 'test' ), 'Creating update study HPS::FastTrack object' );
 is ( $hps_fast_track_update->database(), 'pathogen_hpsft_test', 'Database name comparison update');
 is_deeply ( $hps_fast_track_update->pipeline(), ['update'], 'Pipeline types comparison update');
@@ -56,6 +57,9 @@ throws_ok { my $hps_fast_track_update_without_pipeline_with_study = Bio::HPS::Fa
 	  } qr/Attribute \(pipeline\) is required/, 'Pipeline requirement 2';
 
 
+
+#IMPORT PIPELINE
+print "Import tests\n";
 ok ( my $hps_fast_track_import_study =  Bio::HPS::FastTrack->new( study => 'Comparative RNA-seq analysis of three bacterial species', database => 'pathogen_hpsft_test', pipeline => ['import'], mode => 'test' ),
      'Creating import study HPS::FastTrack object' );
 is ( $hps_fast_track_import_study->database(), 'pathogen_hpsft_test', 'Database name comparison import for study');
@@ -64,7 +68,7 @@ isa_ok ( $hps_fast_track_import_study->pipeline_runners()->[0], 'Bio::HPS::FastT
 $hps_fast_track_import_study->pipeline_runners()->[0]->root('t/data/conf/');
 is ( $hps_fast_track_import_study->pipeline_runners()->[0]->study_metadata->study(), 'Comparative RNA-seq analysis of three bacterial species', 'Study name comparison import for study');
 
-#print Dumper($hps_fast_track_import_study);
+
 
 ok( $hps_fast_track_import_study->pipeline_runners()->[0]->command_to_run, 'Building run command for study import' );
 ok ( -e $hps_fast_track_import_study->pipeline_runners()->[0]->config_files->{'low_level'}, 'Low level config file in place for study import' );
@@ -81,8 +85,8 @@ $expected_command1 .= '/import_cram_pipeline_fast_track.conf -l t/data/log/fast_
 
 is ( $hps_fast_track_import_study->pipeline_runners()->[0]->command_to_run, $expected_command1, 'Command to run import pipeline for study' );
 
-my $dir_to_remove1 = $hps_fast_track_import_study->pipeline_runners()->[0]->config_files->{'tempdir'};
-`rm -rf $dir_to_remove1`;
+ok ( dir_to_remove($hps_fast_track_import_study->pipeline_runners()->[0]->config_files->{'tempdir'}->dirname), 'Removing temp dir' );
+
 
 
 ok ( my $hps_fast_track_import_lane =  Bio::HPS::FastTrack->new( lane => '8405_4#7', database => 'pathogen_hpsft_test', pipeline => ['import'], mode => 'test' ),
@@ -108,8 +112,77 @@ $expected_command2 .= '/import_cram_pipeline_fast_track.conf -l t/data/log/fast_
 
 is ( $hps_fast_track_import_lane->pipeline_runners()->[0]->command_to_run, $expected_command2, 'Command to run import pipeline for importing one lane' );
 
-my $dir_to_remove2 = $hps_fast_track_import_lane->pipeline_runners()->[0]->config_files->{'tempdir'};
-`rm -rf $dir_to_remove2`;
+ok ( dir_to_remove($hps_fast_track_import_lane->pipeline_runners()->[0]->config_files->{'tempdir'}->dirname), 'Removing temp dir' );
+
+
+
+#QC PIPELINE
+
+print "QC tests\n";
+ok ( my $hps_fast_track_qc_study =  Bio::HPS::FastTrack->new( study => 'Comparative RNA-seq analysis of three bacterial species', database => 'pathogen_hpsft_test', pipeline => ['qc'], mode => 'test' ),
+     'Creating qc study HPS::FastTrack object' );
+is ( $hps_fast_track_qc_study->database(), 'pathogen_hpsft_test', 'Database name comparison qc for study');
+is_deeply ( $hps_fast_track_qc_study->pipeline(), ['qc'], 'Pipeline types comparison qc for study');
+isa_ok ( $hps_fast_track_qc_study->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::QC' );
+
+$hps_fast_track_qc_study->pipeline_runners()->[0]->root('t/data/conf/');
+
+ok( $hps_fast_track_qc_study->pipeline_runners()->[0]->command_to_run, 'Building run command for study qc' );
+ok ( -e $hps_fast_track_qc_study->pipeline_runners()->[0]->config_files->{'high_level'}, 'High level config file in place for study qc' );
+
+my @lines3 = read_file( $hps_fast_track_qc_study->pipeline_runners()->[0]->config_files->{'high_level'} ) ;
+
+is ( $lines3[0], "__VRTrack_QC__ t/data/conf/fast_track/qc/qc_Comparative_RNA_seq_analysis_of_three_bacterial_species_Clostridium_difficile.conf\n", '1st line of high level config');
+is ( $lines3[1], "__VRTrack_QC__ t/data/conf/fast_track/qc/qc_Comparative_RNA_seq_analysis_of_three_bacterial_species_Streptococcus_pyogenes.conf\n", '2nd line of high level config');
+
+
+my $expected_command3 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
+$expected_command3 .= $hps_fast_track_qc_study->pipeline_runners()->[0]->config_files->{'tempdir'};
+$expected_command3 .= '/fast_track_qc_pipeline.conf -l t/data/log/fast_track_qc_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.qc_pipeline.lock -m 500';
+is ( $hps_fast_track_qc_study->pipeline_runners()->[0]->command_to_run, $expected_command3, 'Command to run qc pipeline for study' );
+
+ok ( dir_to_remove($hps_fast_track_qc_study->pipeline_runners()->[0]->config_files->{'tempdir'}->dirname ), 'Removing temp dir' );
+
+ok ( my $hps_fast_track_qc_lane =  Bio::HPS::FastTrack->new( lane => '8405_4#7', database => 'pathogen_hpsft_test', pipeline => ['qc'], mode => 'test' ),
+     'Creating qc lane HPS::FastTrack object' );
+is ( $hps_fast_track_qc_lane->database(), 'pathogen_hpsft_test', 'Database name comparison qc for one lane');
+is_deeply ( $hps_fast_track_qc_lane->pipeline(), ['qc'], 'Pipeline types comparison qc for one lane');
+isa_ok ( $hps_fast_track_qc_lane->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::QC' );
+
+$hps_fast_track_qc_lane->pipeline_runners()->[0]->root('t/data/conf/');
+
+is ( $hps_fast_track_qc_lane->pipeline_runners()->[0]->lane_metadata->study_name(), 'Comparative RNA-seq analysis of three bacterial species', 'Study name comparison qc for one lane');
+
+ok( $hps_fast_track_qc_lane->pipeline_runners()->[0]->command_to_run, 'Building run command' );
+ok ( -e $hps_fast_track_qc_lane->pipeline_runners()->[0]->config_files->{'high_level'}, 'High level config file in place for qcing one lane' );
+
+my @lines4 = read_file( $hps_fast_track_qc_lane->pipeline_runners()->[0]->config_files->{'high_level'} ) ;
+
+is ( $lines4[0], "__VRTrack_QC__ t/data/conf/fast_track/qc/qc_Comparative_RNA_seq_analysis_of_three_bacterial_species_Clostridium_difficile.conf\n", '1st line of high level config');
+is ( $lines4[1], "__VRTrack_QC__ t/data/conf/fast_track/qc/qc_Comparative_RNA_seq_analysis_of_three_bacterial_species_Streptococcus_pyogenes.conf\n", '2nd line of high level config');
+
+my $expected_command4 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
+$expected_command4 .= $hps_fast_track_qc_lane->pipeline_runners()->[0]->config_files->{'tempdir'};
+$expected_command4 .= '/fast_track_qc_pipeline.conf -l t/data/log/fast_track_qc_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.qc_pipeline.lock -m 500';
+
+
+is ( $hps_fast_track_qc_lane->pipeline_runners()->[0]->command_to_run, $expected_command4, 'Command to run qc pipeline for qcing one lane' );
+
+ok ( dir_to_remove($hps_fast_track_qc_lane->pipeline_runners()->[0]->config_files->{'tempdir'}->dirname), 'Removing temp dir' );
+
+
+
+
+
+
+
+
 
 done_testing();
 
+
+sub dir_to_remove {
+  my ($dir_to_remove) = @_ ;
+  my $output = `rm -rf $dir_to_remove`;
+  return 1 if ($output eq q());
+}
