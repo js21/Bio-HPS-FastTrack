@@ -45,11 +45,15 @@ sub _extract_studies_to_run {
   my ($self, $main_high_level_config_path, $dir) = @_;
 
   my @lines = read_file($main_high_level_config_path);
+
+  print('STUDY: ',$self->study,"\n");
+  use Data::Dumper;
+  print Dumper(\@lines);
+  my $study_string = $self->study;
+  $study_string =~ s/\s|-/_/g;
   my @registered_studies;
   for my $reg_study(@lines) {
     chomp($reg_study);
-    my $study_string = $self->study;
-    $study_string =~ s/ /_/g;
     if ( $reg_study =~ m/$study_string/) {
       push(@registered_studies, $reg_study);
     }
