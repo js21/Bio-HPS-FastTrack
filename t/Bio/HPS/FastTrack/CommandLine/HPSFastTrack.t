@@ -51,11 +51,28 @@ $output = $@;
 is($output, qq(), 'pipeline_runners method not run');
 
 
+@pipeline = qw(import);
+@params = ('-s','Comparative RNA-seq analysis of three bacterial species','-d','pathogen_hpsft_test','-p',@pipeline,'-m','test');
+$cmd = "$script_name->new(args => \\\@params, script_name => '$script_name')->run;";
+eval($cmd);
+$output = $@;
+is($output, qq(), 'pipeline_runners method not run');
+
+
+@pipeline = qw(qc);
+@params = ('-s','Comparative RNA-seq analysis of three bacterial species','-d','pathogen_hpsft_test','-p',@pipeline,'-m','test');
+$cmd = "$script_name->new(args => \\\@params, script_name => '$script_name')->run;";
+eval($cmd);
+$output = $@;
+is($output, qq(), 'pipeline_runners method not run');
+
+
 @params = ('-h');
 $cmd = "$script_name->new(args => \\\@params, script_name => '$script_name','-m','test')->run;";
 eval($cmd);
 $output = $@;
 is($output, $expected_usage, "Usage - '-h' option passed");
+
 
 
 done_testing();

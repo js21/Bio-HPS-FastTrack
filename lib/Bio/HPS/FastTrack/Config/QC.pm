@@ -12,6 +12,20 @@ use Moose;
 use File::Slurp;
 extends('Bio::HPS::FastTrack::Config::Config');
 
+has 'suffix_for_config_path' => ( is => 'rw', isa => 'Str', builder => '_build_suffix_for_config_path' );
+
+sub BUILD {
+
+  my ($self) = @_;
+  $self->root('t/data/conf/') if $self->mode eq 'test';
+}
+
+sub _build_suffix_for_config_path {
+
+  my ($self) = @_;
+  return $self->db_alias() eq 'no alias' ? $self->database() : $self->db_alias();;
+}
+
 sub _build_config_files {
 
   my ($self) = @_;
@@ -20,14 +34,13 @@ sub _build_config_files {
     Bio::HPS::FastTrack::Exception::FeatureNotYetImplemented->throw( error => "Fast tracking QC for a specific lane is not yet possible\n" );
   }
 
-  my $suffix_for_config_path = $self->db_alias() eq 'no alias' ? $self->database() : $self->db_alias();
   my $pipeline = $self->pipeline_stage;
   $pipeline =~ s/_pipeline//;
 
-  my $dir = File::Temp->newdir($self->root . $suffix_for_config_path . q(/) . 'XXXX', CLEANUP => 0);
-  my $main_high_level_config_path = $self->root . $suffix_for_config_path . q(/) . $suffix_for_config_path . q(_) . $self->pipeline_stage . q(.conf);
-  my $high_level_path = $dir->dirname . q(/) . $suffix_for_config_path . q(_) . $self->pipeline_stage . q(.conf);
-  my $import_log_file = $self->log_root . $suffix_for_config_path . q(_) . $self->pipeline_stage . q(.log);
+  my $dir = File::Temp->newdir($self->root . $self->suffix_for_config_path . q(/) . 'XXXX', CLEANUP => 0);
+  my $main_high_level_config_path = $self->root . $self->suffix_for_config_path . q(/) . $self->suffix_for_config_path . q(_) . $self->pipeline_stage . q(.conf);
+  my $high_level_path = $dir->dirname . q(/) . $self->suffix_for_config_path . q(_) . $self->pipeline_stage . q(.conf);
+  my $import_log_file = $self->log_root . $self->suffix_for_config_path . q(_) . $self->pipeline_stage . q(.log);
 
   my $registered_studies = _extract_studies_to_run($self, $main_high_level_config_path, $dir);
   _write_high_level_conf_file($self,$high_level_path,$registered_studies);

@@ -38,15 +38,6 @@ sub run {
   my $output = `$command`;
   sleep($self->sleep_time);
   print "$output\n";
-  my $dir_to_remove = $self->config_files->{'tempdir'};
-  _remove_temp_config_folder($dir_to_remove);
-}
-
-sub _remove_temp_config_folder {
-
-  my ($dir_to_remove) =@_;
-  `rm -rf $dir_to_remove`;
-  print "Deleting $dir_to_remove\n";
 }
 
 no Moose;

@@ -19,13 +19,13 @@ is_deeply ( $hps_fast_track_update->pipeline(), ['update'], 'Pipeline types comp
 isa_ok ( $hps_fast_track_update->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::Update' );
 is ( $hps_fast_track_update->pipeline_runners()->[0]->study_metadata->study(), 'Comparative RNA-seq analysis of three bacterial species', 'Study id comparison update');
 is ( $hps_fast_track_update->pipeline_runners()->[0]->command_to_run,
-     q(/software/pathogen/projects/update_pipeline/bin/update_pipeline.pl -n 'Comparative RNA-seq analysis of three bacterial species' --database=pathogen_hpsft_test -l /nfs/pathnfs05/conf/fast_track/.pathogen_hpsft_test.update_pipeline.lock -nop -v --file_type cram),
+     q(/software/pathogen/projects/update_pipeline/bin/update_pipeline.pl -n 'Comparative RNA-seq analysis of three bacterial species' --database=pathogen_hpsft_test -l t/data/conf/fast_track/.pathogen_hpsft_test.update_pipeline.lock -nop -v --file_type cram),
      'Update command');
 
 ok ( my $hps_fast_track_update_lane =  Bio::HPS::FastTrack->new( lane => '8405_4#7', database => 'pathogen_hpsft_test', pipeline => ['update'], mode => 'test' ), 'Creating update_lane HPS::FastTrack object' );
 isa_ok ( $hps_fast_track_update_lane->pipeline_runners->[0], 'Bio::HPS::FastTrack::PipelineRun::Update' );
 is ( $hps_fast_track_update_lane->pipeline_runners()->[0]->command_to_run(),
-     q(/software/pathogen/projects/update_pipeline/bin/update_pipeline.pl -n 'Comparative RNA-seq analysis of three bacterial species' --database=pathogen_hpsft_test -run 8405 -min 8404 -l /nfs/pathnfs05/conf/fast_track/.pathogen_hpsft_test.update_pipeline.lock -nop -v --file_type cram),
+     q(/software/pathogen/projects/update_pipeline/bin/update_pipeline.pl -n 'Comparative RNA-seq analysis of three bacterial species' --database=pathogen_hpsft_test -run 8405 -min 8404 -l t/data/conf/fast_track/.pathogen_hpsft_test.update_pipeline.lock -nop -v --file_type cram),
      'Update command 2');
 is ( $hps_fast_track_update_lane->pipeline_runners->[0]->study, 'Comparative RNA-seq analysis of three bacterial species', 'Study name' );
 
@@ -36,7 +36,7 @@ is_deeply ( $hps_fast_track_update_study_for_run->pipeline(), ['update'], 'Pipel
 isa_ok ( $hps_fast_track_update_study_for_run->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::Update' );
 is ( $hps_fast_track_update_study_for_run->pipeline_runners()->[0]->study_metadata->study(), 'Comparative RNA-seq analysis of three bacterial species', 'Study name comparison update');
 is ( $hps_fast_track_update_study_for_run->pipeline_runners()->[0]->command_to_run,
-     q(/software/pathogen/projects/update_pipeline/bin/update_pipeline.pl -n 'Comparative RNA-seq analysis of three bacterial species' --database=pathogen_hpsft_test -run 8405 -min 8404 -l /nfs/pathnfs05/conf/fast_track/.pathogen_hpsft_test.update_pipeline.lock -nop -v --file_type cram),
+     q(/software/pathogen/projects/update_pipeline/bin/update_pipeline.pl -n 'Comparative RNA-seq analysis of three bacterial species' --database=pathogen_hpsft_test -run 8405 -min 8404 -l t/data/conf/fast_track/.pathogen_hpsft_test.update_pipeline.lock -nop -v --file_type cram),
      'Update command 3');
 
 ok ( my $hps_fast_track_update_without_lane_or_study =  Bio::HPS::FastTrack->new( database => 'pathogen_hpsft_test', pipeline => ['update'], mode => 'test' ), 'Creating update HPS::FastTrack object without lane or study' );
@@ -149,7 +149,7 @@ is ( $hps_fast_track_qc_lane->database(), 'pathogen_hpsft_test', 'Database name 
 is_deeply ( $hps_fast_track_qc_lane->pipeline(), ['qc'], 'Pipeline types comparison qc for one lane');
 isa_ok ( $hps_fast_track_qc_lane->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::QC' );
 
-$hps_fast_track_qc_lane->pipeline_runners()->[0]->root('t/data/conf/');
+#$hps_fast_track_qc_lane->pipeline_runners()->[0]->root('t/data/conf/');
 
 is ( $hps_fast_track_qc_lane->pipeline_runners()->[0]->lane_metadata->study_name(), 'Comparative RNA-seq analysis of three bacterial species', 'Study name comparison qc for one lane');
 

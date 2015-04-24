@@ -16,7 +16,6 @@ use Bio::HPS::FastTrack::Types::FastTrackTypes;
 use Bio::HPS::FastTrack::Exception;
 
 has 'root' => ( is => 'rw', isa => 'Str', default => '/nfs/pathnfs05/conf/' );
-#has 'root' => ( is => 'ro', isa => 'Str', default => '/lustre/scratch108/pathogen/js21/conf/' );
 has 'pipeline_exec' => ( is => 'ro', isa => 'Str', default => '' );
 has 'pipeline_stage' => ( is => 'ro', isa => 'Str', default => '' );
 has 'sleep_time' => ( is => 'rw', isa => 'Int', lazy => 1, default => 120 );
@@ -25,6 +24,7 @@ has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'mode' => ( is => 'rw', isa => 'RunMode', required => 1);
 has 'study' => ( is => 'rw', isa => 'Str', lazy => 1, default => '' );
 has 'lane' => ( is => 'rw', isa => 'Str', lazy => 1, default => '');
+has 'temp_dir' => ( is => 'rw', isa => 'Str', lazy => 1, default => '' );
 
 has 'pipeline_runner' => ( is => 'rw', isa => 'HashRef', lazy => 1, builder => '_build_pipeline_runner' );
 has 'db_alias' => ( is => 'rw', isa => 'Str', builder => '_build_db_alias' );
@@ -88,6 +88,10 @@ sub _build_lane_metadata {
 sub _build_lock_file {
 
   my ($self) = @_;
+
+  #Set root to point to test folder if running in test mode before building the lock file path
+  $self->root('t/data/conf/') if $self->mode eq 'test';
+
   my $lock_file;
   if ( $self->db_alias eq 'no alias' || !defined $self->db_alias ) {
     $lock_file = $self->root() . $self->database() . q(/.) . $self->database() . q(.) . $self->pipeline_stage() . q(.lock);
@@ -105,15 +109,20 @@ sub _build_config_files {
   my %no_config;
   return \%no_config if $self->pipeline_stage eq 'update_pipeline';
 
-  return Bio::HPS::FastTrack::SetConfig->new(
-					  study => $self->study(),
-					  lane => $self->lane(),
-					  database => $self->database(),
-					  pipeline_stage => $self->pipeline_stage(),
-					  db_alias => $self->db_alias,
-					  root => $self->root(),
-					  mode => $self->mode()
-					 )->config_files();
+  #Set root to point to test folder if running in test mode before building any config file paths
+  $self->root('t/data/conf/') if $self->mode eq 'test';
+
+  my $config_files = Bio::HPS::FastTrack::SetConfig->new(
+							 study => $self->study(),
+							 lane => $self->lane(),
+							 database => $self->database(),
+							 pipeline_stage => $self->pipeline_stage(),
+							 db_alias => $self->db_alias,
+							 root => $self->root(),
+							 mode => $self->mode()
+							)->config_files();
+  $self->temp_dir($config_files->{'tempdir'}->dirname);
+  return $config_files;
 }
 
 no Moose;
