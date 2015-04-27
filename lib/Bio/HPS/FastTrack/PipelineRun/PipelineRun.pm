@@ -9,6 +9,7 @@ my $mapping_analysis_runner = Bio::HPS::FastTrack::PipelineRun::PipelineRun->new
 =cut
 
 use Moose;
+use Time::HiRes qw(sleep);
 use Bio::HPS::FastTrack::SetConfig;
 use Bio::HPS::FastTrack::VRTrackWrapper::Study;
 use Bio::HPS::FastTrack::VRTrackWrapper::Lane;
@@ -132,9 +133,11 @@ sub _build_command_to_run {
 
   my $lock_file = $self->lock_file();
   my $command = $self->pipeline_exec();
+  my $time_to_sleep = $self->sleep_time / 60;
   my $command_to_run = $self->pipeline_exec . q( -c ) . $self->config_files->{'high_level'} . q( -l ) . $self->config_files->{'log_file'};
   $command_to_run .= q( -v -v -L ) . $self->lock_file;
   $command_to_run .= q( -m 500);
+  $command_to_run .= qq( -s $time_to_sleep);
   return $command_to_run;
 }
 
@@ -142,10 +145,9 @@ sub run {
 
   my ($self) = @_;
   my $command = $self->command_to_run();
-  #print "$command\n";
-  my $output = `$command`;
-  sleep($self->sleep_time);
-  print "$output\n";
+  print "$command\n";
+  `$command` if $self->mode eq 'prod';
+
 }
 
 

@@ -30,13 +30,15 @@ sub run {
     if ( $self->study() ) {
       $pipeline_runner->config_files() unless $self->pipeline eq 'update'; #The Update pipeline follows a different protocol. No config files are required
       $pipeline_runner->command_to_run();
-      $pipeline_runner->run() if $self->mode() eq 'prod'; #Only run if in production
+      $pipeline_runner->run();
+      #$pipeline_runner->run() if $self->mode() eq 'prod'; #Only run if in production
     }
     else {
       $pipeline_runner->config_files() unless $self->pipeline eq 'update'; #The Update pipeline follows a different protocol. No config files are required
       $pipeline_runner->lane_metadata();
       $pipeline_runner->command_to_run();
-      $pipeline_runner->run() if $self->mode() eq 'prod'; #Only run if in production
+      $pipeline_runner->run();
+      #$pipeline_runner->run() if $self->mode() eq 'prod'; #Only run if in production
     }
     _remove_temp_dir( $pipeline_runner->temp_dir );
   }
