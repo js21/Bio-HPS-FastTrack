@@ -59,7 +59,7 @@ $output = $@;
 is($output, qq(), 'pipeline_runners method not run');
 
 
-@pipeline = qw(qc);
+@pipeline = qw(qc mapping assembly annotation snp-calling rna-seq);
 @params = ('-s','Comparative RNA-seq analysis of three bacterial species','-d','pathogen_hpsft_test','-p',@pipeline,'-m','test');
 $cmd = "$script_name->new(args => \\\@params, script_name => '$script_name')->run;";
 eval($cmd);

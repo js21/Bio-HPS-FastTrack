@@ -11,12 +11,6 @@ my $snp_calling_config = Bio::HPS::FastTrack::Config::SNPCalling->new(study => '
 use Moose;
 extends('Bio::HPS::FastTrack::Config::Config');
 
-sub run {
-
-  my ($self) = @_;
-  return 1;
-
-}
 
 no Moose;
 __PACKAGE__->meta->make_immutable;

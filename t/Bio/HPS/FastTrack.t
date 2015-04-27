@@ -65,7 +65,6 @@ ok ( my $hps_fast_track_import_study =  Bio::HPS::FastTrack->new( study => 'Comp
 is ( $hps_fast_track_import_study->database(), 'pathogen_hpsft_test', 'Database name comparison import for study');
 is_deeply ( $hps_fast_track_import_study->pipeline(), ['import'], 'Pipeline types comparison import for study');
 isa_ok ( $hps_fast_track_import_study->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::Import' );
-$hps_fast_track_import_study->pipeline_runners()->[0]->root('t/data/conf/');
 is ( $hps_fast_track_import_study->pipeline_runners()->[0]->study_metadata->study(), 'Comparative RNA-seq analysis of three bacterial species', 'Study name comparison import for study');
 
 
@@ -94,7 +93,6 @@ ok ( my $hps_fast_track_import_lane =  Bio::HPS::FastTrack->new( lane => '8405_4
 is ( $hps_fast_track_import_lane->database(), 'pathogen_hpsft_test', 'Database name comparison import for one lane');
 is_deeply ( $hps_fast_track_import_lane->pipeline(), ['import'], 'Pipeline types comparison import for one lane');
 isa_ok ( $hps_fast_track_import_lane->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::Import' );
-$hps_fast_track_import_lane->pipeline_runners()->[0]->root('t/data/conf/');
 is ( $hps_fast_track_import_lane->pipeline_runners()->[0]->lane_metadata->study_name(), 'Comparative RNA-seq analysis of three bacterial species', 'Study name comparison import for one lane');
 
 ok( $hps_fast_track_import_lane->pipeline_runners()->[0]->command_to_run, 'Building run command' );
@@ -149,8 +147,6 @@ is ( $hps_fast_track_qc_lane->database(), 'pathogen_hpsft_test', 'Database name 
 is_deeply ( $hps_fast_track_qc_lane->pipeline(), ['qc'], 'Pipeline types comparison qc for one lane');
 isa_ok ( $hps_fast_track_qc_lane->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::QC' );
 
-#$hps_fast_track_qc_lane->pipeline_runners()->[0]->root('t/data/conf/');
-
 is ( $hps_fast_track_qc_lane->pipeline_runners()->[0]->lane_metadata->study_name(), 'Comparative RNA-seq analysis of three bacterial species', 'Study name comparison qc for one lane');
 
 ok( $hps_fast_track_qc_lane->pipeline_runners()->[0]->command_to_run, 'Building run command' );
@@ -172,10 +168,271 @@ ok ( dir_to_remove($hps_fast_track_qc_lane->pipeline_runners()->[0]->config_file
 
 
 
+#MAPPING PIPELINE
+
+print "Mapping tests\n";
+ok ( my $hps_fast_track_mapping_study =  Bio::HPS::FastTrack->new( study => 'Comparative RNA-seq analysis of three bacterial species', database => 'pathogen_hpsft_test', pipeline => ['mapping'], mode => 'test' ),
+     'Creating mapping study HPS::FastTrack object' );
+is ( $hps_fast_track_mapping_study->database(), 'pathogen_hpsft_test', 'Database name comparison mapping for study');
+is_deeply ( $hps_fast_track_mapping_study->pipeline(), ['mapping'], 'Pipeline types comparison mapping for study');
+isa_ok ( $hps_fast_track_mapping_study->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::Mapping' );
+
+$hps_fast_track_mapping_study->pipeline_runners()->[0]->root('t/data/conf/');
+
+ok( $hps_fast_track_mapping_study->pipeline_runners()->[0]->command_to_run, 'Building run command for study mapping' );
+ok ( -e $hps_fast_track_mapping_study->pipeline_runners()->[0]->config_files->{'high_level'}, 'High level config file in place for study mapping' );
+
+my @lines5 = read_file( $hps_fast_track_mapping_study->pipeline_runners()->[0]->config_files->{'high_level'} ) ;
+
+is ( $lines5[0], "__VRTrack_Mapping__ t/data/conf/fast_track/mapping/mapping_Comparative_RNA_seq_analysis_of_three_bacterial_species_Clostridium_difficil_83.conf\n", '1st line of high level config');
+is ( $lines5[1],
+     "__VRTrack_Mapping__ t/data/conf/fast_track/mapping/mapping_Comparative_RNA_seq_analysis_of_three_bacterial_species_Streptococcus_pyogenes_Streptococcus_pyogenes_BC2_HKU16_v0.1_bwa.conf\n",
+     '2nd line of high level config');
+
+my $expected_command5 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
+$expected_command5 .= $hps_fast_track_mapping_study->pipeline_runners()->[0]->config_files->{'tempdir'};
+$expected_command5 .= '/fast_track_mapping_pipeline.conf -l t/data/log/fast_track_mapping_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.mapping_pipeline.lock -m 500';
+is ( $hps_fast_track_mapping_study->pipeline_runners()->[0]->command_to_run, $expected_command5, 'Command to run mapping pipeline for study' );
+
+ok ( dir_to_remove($hps_fast_track_mapping_study->pipeline_runners()->[0]->config_files->{'tempdir'}->dirname ), 'Removing temp dir' );
+
+ok ( my $hps_fast_track_mapping_lane =  Bio::HPS::FastTrack->new( lane => '8405_4#7', database => 'pathogen_hpsft_test', pipeline => ['mapping'], mode => 'test' ),
+     'Creating mapping lane HPS::FastTrack object' );
+is ( $hps_fast_track_mapping_lane->database(), 'pathogen_hpsft_test', 'Database name comparison mapping for one lane');
+is_deeply ( $hps_fast_track_mapping_lane->pipeline(), ['mapping'], 'Pipeline types comparison mapping for one lane');
+isa_ok ( $hps_fast_track_mapping_lane->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::Mapping' );
+
+is ( $hps_fast_track_mapping_lane->pipeline_runners()->[0]->lane_metadata->study_name(), 'Comparative RNA-seq analysis of three bacterial species', 'Study name comparison mapping for one lane');
+
+ok( $hps_fast_track_mapping_lane->pipeline_runners()->[0]->command_to_run, 'Building run command' );
+ok ( -e $hps_fast_track_mapping_lane->pipeline_runners()->[0]->config_files->{'high_level'}, 'High level config file in place for mappinging one lane' );
+
+my @lines6= read_file( $hps_fast_track_mapping_lane->pipeline_runners()->[0]->config_files->{'high_level'} ) ;
+
+is ( $lines6[0], "__VRTrack_Mapping__ t/data/conf/fast_track/mapping/mapping_Comparative_RNA_seq_analysis_of_three_bacterial_species_Clostridium_difficil_83.conf\n", '1st line of high level config');
+is ( $lines6[1],
+     "__VRTrack_Mapping__ t/data/conf/fast_track/mapping/mapping_Comparative_RNA_seq_analysis_of_three_bacterial_species_Streptococcus_pyogenes_Streptococcus_pyogenes_BC2_HKU16_v0.1_bwa.conf\n",
+     '2nd line of high level config');
+
+my $expected_command6 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
+$expected_command6 .= $hps_fast_track_mapping_lane->pipeline_runners()->[0]->config_files->{'tempdir'};
+$expected_command6 .= '/fast_track_mapping_pipeline.conf -l t/data/log/fast_track_mapping_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.mapping_pipeline.lock -m 500';
+
+
+is ( $hps_fast_track_mapping_lane->pipeline_runners()->[0]->command_to_run, $expected_command6, 'Command to run mapping pipeline for mappinging one lane' );
+
+ok ( dir_to_remove($hps_fast_track_mapping_lane->pipeline_runners()->[0]->config_files->{'tempdir'}->dirname), 'Removing temp dir' );
+
+
+#ASSEMBLY PIPELINE
+
+print "Assembly tests\n";
+ok ( my $hps_fast_track_assembly_study =  Bio::HPS::FastTrack->new( study => 'Comparative RNA-seq analysis of three bacterial species', database => 'pathogen_hpsft_test', pipeline => ['assembly'], mode => 'test' ),
+     'Creating assembly study HPS::FastTrack object' );
+is ( $hps_fast_track_assembly_study->database(), 'pathogen_hpsft_test', 'Database name comparison assembly for study');
+is_deeply ( $hps_fast_track_assembly_study->pipeline(), ['assembly'], 'Pipeline types comparison assembly for study');
+isa_ok ( $hps_fast_track_assembly_study->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::Assembly' );
+
+ok( $hps_fast_track_assembly_study->pipeline_runners()->[0]->command_to_run, 'Building run command for study assembly' );
+ok ( -e $hps_fast_track_assembly_study->pipeline_runners()->[0]->config_files->{'high_level'}, 'High level config file in place for study assembly' );
+
+my @lines7 = read_file( $hps_fast_track_assembly_study->pipeline_runners()->[0]->config_files->{'high_level'} ) ;
+
+is ( $lines7[0], "__VRTrack_Assembly__ t/data/conf/fast_track/assembly/assembly_Comparative_RNA_seq_analysis_of_three_bacterial_species_velvet.conf\n", '1st line of high level config');
+
+my $expected_command7 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
+$expected_command7 .= $hps_fast_track_assembly_study->pipeline_runners()->[0]->config_files->{'tempdir'};
+$expected_command7 .= '/fast_track_assembly_pipeline.conf -l t/data/log/fast_track_assembly_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.assembly_pipeline.lock -m 500';
+is ( $hps_fast_track_assembly_study->pipeline_runners()->[0]->command_to_run, $expected_command7, 'Command to run assembly pipeline for study' );
+
+ok ( dir_to_remove($hps_fast_track_assembly_study->pipeline_runners()->[0]->config_files->{'tempdir'}->dirname ), 'Removing temp dir' );
+
+ok ( my $hps_fast_track_assembly_lane =  Bio::HPS::FastTrack->new( lane => '8405_4#7', database => 'pathogen_hpsft_test', pipeline => ['assembly'], mode => 'test' ),
+     'Creating assembly lane HPS::FastTrack object' );
+is ( $hps_fast_track_assembly_lane->database(), 'pathogen_hpsft_test', 'Database name comparison assembly for one lane');
+is_deeply ( $hps_fast_track_assembly_lane->pipeline(), ['assembly'], 'Pipeline types comparison assembly for one lane');
+isa_ok ( $hps_fast_track_assembly_lane->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::Assembly' );
+
+is ( $hps_fast_track_assembly_lane->pipeline_runners()->[0]->lane_metadata->study_name(), 'Comparative RNA-seq analysis of three bacterial species', 'Study name comparison assembly for one lane');
+
+ok( $hps_fast_track_assembly_lane->pipeline_runners()->[0]->command_to_run, 'Building run command' );
+ok ( -e $hps_fast_track_assembly_lane->pipeline_runners()->[0]->config_files->{'high_level'}, 'High level config file in place for assemblying one lane' );
+
+my @lines8 = read_file( $hps_fast_track_assembly_lane->pipeline_runners()->[0]->config_files->{'high_level'} ) ;
+
+is ( $lines8[0], "__VRTrack_Assembly__ t/data/conf/fast_track/assembly/assembly_Comparative_RNA_seq_analysis_of_three_bacterial_species_velvet.conf\n", '1st line of high level config');
+
+my $expected_command8 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
+$expected_command8 .= $hps_fast_track_assembly_lane->pipeline_runners()->[0]->config_files->{'tempdir'};
+$expected_command8 .= '/fast_track_assembly_pipeline.conf -l t/data/log/fast_track_assembly_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.assembly_pipeline.lock -m 500';
+
+
+is ( $hps_fast_track_assembly_lane->pipeline_runners()->[0]->command_to_run, $expected_command8, 'Command to run assembly pipeline for assemblying one lane' );
+
+ok ( dir_to_remove($hps_fast_track_assembly_lane->pipeline_runners()->[0]->config_files->{'tempdir'}->dirname), 'Removing temp dir' );
 
 
 
+#ANNOTATION PIPELINE
 
+print "Annotation tests\n";
+ok ( my $hps_fast_track_annotation_study =  Bio::HPS::FastTrack->new( study => 'Comparative RNA-seq analysis of three bacterial species', database => 'pathogen_hpsft_test', pipeline => ['annotation'], mode => 'test' ),
+     'Creating annotation study HPS::FastTrack object' );
+is ( $hps_fast_track_annotation_study->database(), 'pathogen_hpsft_test', 'Database name comparison annotation for study');
+is_deeply ( $hps_fast_track_annotation_study->pipeline(), ['annotation'], 'Pipeline types comparison annotation for study');
+isa_ok ( $hps_fast_track_annotation_study->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::Annotation' );
+
+
+ok( $hps_fast_track_annotation_study->pipeline_runners()->[0]->command_to_run, 'Building run command for study annotation' );
+ok ( -e $hps_fast_track_annotation_study->pipeline_runners()->[0]->config_files->{'high_level'}, 'High level config file in place for study annotation' );
+
+my @lines9 = read_file( $hps_fast_track_annotation_study->pipeline_runners()->[0]->config_files->{'high_level'} ) ;
+
+is ( $lines9[0], "__VRTrack_AnnotateAssembly__ t/data/conf/fast_track/annotate_assembly/annotate_assembly_Comparative_RNA_seq_analysis_of_three_bacterial_species_velvet.conf\n", '1st line of high level config');
+
+my $expected_command9 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
+$expected_command9 .= $hps_fast_track_annotation_study->pipeline_runners()->[0]->config_files->{'tempdir'};
+$expected_command9 .= '/fast_track_annotate_assembly_pipeline.conf -l t/data/log/fast_track_annotate_assembly_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.annotate_assembly_pipeline.lock -m 500';
+is ( $hps_fast_track_annotation_study->pipeline_runners()->[0]->command_to_run, $expected_command9, 'Command to run annotation pipeline for study' );
+
+ok ( dir_to_remove($hps_fast_track_annotation_study->pipeline_runners()->[0]->config_files->{'tempdir'}->dirname ), 'Removing temp dir' );
+
+ok ( my $hps_fast_track_annotation_lane =  Bio::HPS::FastTrack->new( lane => '8405_4#7', database => 'pathogen_hpsft_test', pipeline => ['annotation'], mode => 'test' ),
+     'Creating annotation lane HPS::FastTrack object' );
+is ( $hps_fast_track_annotation_lane->database(), 'pathogen_hpsft_test', 'Database name comparison annotation for one lane');
+is_deeply ( $hps_fast_track_annotation_lane->pipeline(), ['annotation'], 'Pipeline types comparison annotation for one lane');
+isa_ok ( $hps_fast_track_annotation_lane->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::Annotation' );
+
+is ( $hps_fast_track_annotation_lane->pipeline_runners()->[0]->lane_metadata->study_name(), 'Comparative RNA-seq analysis of three bacterial species', 'Study name comparison annotation for one lane');
+
+ok( $hps_fast_track_annotation_lane->pipeline_runners()->[0]->command_to_run, 'Building run command' );
+ok ( -e $hps_fast_track_annotation_lane->pipeline_runners()->[0]->config_files->{'high_level'}, 'High level config file in place for annotationing one lane' );
+
+my @lines10 = read_file( $hps_fast_track_annotation_lane->pipeline_runners()->[0]->config_files->{'high_level'} ) ;
+
+is ( $lines10[0], "__VRTrack_AnnotateAssembly__ t/data/conf/fast_track/annotate_assembly/annotate_assembly_Comparative_RNA_seq_analysis_of_three_bacterial_species_velvet.conf\n", '1st line of high level config');
+
+my $expected_command10 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
+$expected_command10 .= $hps_fast_track_annotation_lane->pipeline_runners()->[0]->config_files->{'tempdir'};
+$expected_command10 .= '/fast_track_annotate_assembly_pipeline.conf -l t/data/log/fast_track_annotate_assembly_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.annotate_assembly_pipeline.lock -m 500';
+
+
+is ( $hps_fast_track_annotation_lane->pipeline_runners()->[0]->command_to_run, $expected_command10, 'Command to run annotation pipeline for annotationing one lane' );
+
+ok ( dir_to_remove($hps_fast_track_annotation_lane->pipeline_runners()->[0]->config_files->{'tempdir'}->dirname), 'Removing temp dir' );
+
+
+
+#SNPCalling PIPELINE
+
+print "SNPCalling tests\n";
+ok ( my $hps_fast_track_snps_study =  Bio::HPS::FastTrack->new( study => 'Comparative RNA-seq analysis of three bacterial species', database => 'pathogen_hpsft_test', pipeline => ['snp-calling'], mode => 'test' ),
+     'Creating snps study HPS::FastTrack object' );
+is ( $hps_fast_track_snps_study->database(), 'pathogen_hpsft_test', 'Database name comparison snps for study');
+is_deeply ( $hps_fast_track_snps_study->pipeline(), ['snp-calling'], 'Pipeline types comparison snps for study');
+isa_ok ( $hps_fast_track_snps_study->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::SNPCalling' );
+
+ok( $hps_fast_track_snps_study->pipeline_runners()->[0]->command_to_run, 'Building run command for study snps' );
+ok ( -e $hps_fast_track_snps_study->pipeline_runners()->[0]->config_files->{'high_level'}, 'High level config file in place for study snps' );
+
+my @lines11 = read_file( $hps_fast_track_snps_study->pipeline_runners()->[0]->config_files->{'high_level'} ) ;
+
+is ( $lines11[0], "__VRTrack_SNPs__ t/data/conf/fast_track/snps/snps_Comparative_RNA_seq_analysis_of_three_bacterial_species_Clostridium_difficil_83.conf\n", '1st line of high level config');
+
+my $expected_command11 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
+$expected_command11 .= $hps_fast_track_snps_study->pipeline_runners()->[0]->config_files->{'tempdir'};
+$expected_command11 .= '/fast_track_snps_pipeline.conf -l t/data/log/fast_track_snps_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.snps_pipeline.lock -m 500';
+is ( $hps_fast_track_snps_study->pipeline_runners()->[0]->command_to_run, $expected_command11, 'Command to run snps pipeline for study' );
+
+ok ( dir_to_remove($hps_fast_track_snps_study->pipeline_runners()->[0]->config_files->{'tempdir'}->dirname ), 'Removing temp dir' );
+
+ok ( my $hps_fast_track_snps_lane =  Bio::HPS::FastTrack->new( lane => '8405_4#7', database => 'pathogen_hpsft_test', pipeline => ['snp-calling'], mode => 'test' ),
+     'Creating snps lane HPS::FastTrack object' );
+is ( $hps_fast_track_snps_lane->database(), 'pathogen_hpsft_test', 'Database name comparison snps for one lane');
+is_deeply ( $hps_fast_track_snps_lane->pipeline(), ['snp-calling'], 'Pipeline types comparison snps for one lane');
+isa_ok ( $hps_fast_track_snps_lane->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::SNPCalling' );
+
+is ( $hps_fast_track_snps_lane->pipeline_runners()->[0]->lane_metadata->study_name(), 'Comparative RNA-seq analysis of three bacterial species', 'Study name comparison snps for one lane');
+
+ok( $hps_fast_track_snps_lane->pipeline_runners()->[0]->command_to_run, 'Building run command' );
+ok ( -e $hps_fast_track_snps_lane->pipeline_runners()->[0]->config_files->{'high_level'}, 'High level config file in place for snpsing one lane' );
+
+my @lines12 = read_file( $hps_fast_track_snps_lane->pipeline_runners()->[0]->config_files->{'high_level'} ) ;
+
+is ( $lines12[0], "__VRTrack_SNPs__ t/data/conf/fast_track/snps/snps_Comparative_RNA_seq_analysis_of_three_bacterial_species_Clostridium_difficil_83.conf\n", '1st line of high level config');
+
+my $expected_command12 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
+$expected_command12 .= $hps_fast_track_snps_lane->pipeline_runners()->[0]->config_files->{'tempdir'};
+$expected_command12 .= '/fast_track_snps_pipeline.conf -l t/data/log/fast_track_snps_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.snps_pipeline.lock -m 500';
+
+
+is ( $hps_fast_track_snps_lane->pipeline_runners()->[0]->command_to_run, $expected_command12, 'Command to run snps pipeline for snpsing one lane' );
+
+ok ( dir_to_remove($hps_fast_track_snps_lane->pipeline_runners()->[0]->config_files->{'tempdir'}->dirname), 'Removing temp dir' );
+
+
+#RNASeq PIPELINE
+
+print "RNASeq tests\n";
+ok ( my $hps_fast_track_rna_seq_study =  Bio::HPS::FastTrack->new( study => 'Comparative RNA-seq analysis of three bacterial species', database => 'pathogen_hpsft_test', pipeline => ['rna-seq'], mode => 'test' ),
+     'Creating rna_seq study HPS::FastTrack object' );
+is ( $hps_fast_track_rna_seq_study->database(), 'pathogen_hpsft_test', 'Database name comparison rna_seq for study');
+is_deeply ( $hps_fast_track_rna_seq_study->pipeline(), ['rna-seq'], 'Pipeline types comparison rna_seq for study');
+isa_ok ( $hps_fast_track_rna_seq_study->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis' );
+
+ok( $hps_fast_track_rna_seq_study->pipeline_runners()->[0]->command_to_run, 'Building run command for study rna_seq' );
+ok ( -e $hps_fast_track_rna_seq_study->pipeline_runners()->[0]->config_files->{'high_level'}, 'High level config file in place for study rna_seq' );
+
+my @lines13 = read_file( $hps_fast_track_rna_seq_study->pipeline_runners()->[0]->config_files->{'high_level'} ) ;
+
+is ( $lines13[0], "__VRTrack_RNASeqExpression__ t/data/conf/fast_track/rna_seq/rna_seq_Comparative_RNA_seq_analysis_of_three_bacterial_species_Clostridium_difficil_840.conf\n", '1st line of high level config');
+
+my $expected_command13 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
+$expected_command13 .= $hps_fast_track_rna_seq_study->pipeline_runners()->[0]->config_files->{'tempdir'};
+$expected_command13 .= '/fast_track_rna_seq_pipeline.conf -l t/data/log/fast_track_rna_seq_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.rna_seq_pipeline.lock -m 500';
+is ( $hps_fast_track_rna_seq_study->pipeline_runners()->[0]->command_to_run, $expected_command13, 'Command to run rna_seq pipeline for study' );
+
+ok ( dir_to_remove($hps_fast_track_rna_seq_study->pipeline_runners()->[0]->config_files->{'tempdir'}->dirname ), 'Removing temp dir' );
+
+ok ( my $hps_fast_track_rna_seq_lane =  Bio::HPS::FastTrack->new( lane => '8405_4#7', database => 'pathogen_hpsft_test', pipeline => ['rna-seq'], mode => 'test' ),
+     'Creating rna_seq lane HPS::FastTrack object' );
+is ( $hps_fast_track_rna_seq_lane->database(), 'pathogen_hpsft_test', 'Database name comparison rna_seq for one lane');
+is_deeply ( $hps_fast_track_rna_seq_lane->pipeline(), ['rna-seq'], 'Pipeline types comparison rna_seq for one lane');
+isa_ok ( $hps_fast_track_rna_seq_lane->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis' );
+
+is ( $hps_fast_track_rna_seq_lane->pipeline_runners()->[0]->lane_metadata->study_name(), 'Comparative RNA-seq analysis of three bacterial species', 'Study name comparison rna_seq for one lane');
+
+ok( $hps_fast_track_rna_seq_lane->pipeline_runners()->[0]->command_to_run, 'Building run command' );
+ok ( -e $hps_fast_track_rna_seq_lane->pipeline_runners()->[0]->config_files->{'high_level'}, 'High level config file in place for rna_seqing one lane' );
+
+my @lines14 = read_file( $hps_fast_track_rna_seq_lane->pipeline_runners()->[0]->config_files->{'high_level'} ) ;
+
+is ( $lines14[0], "__VRTrack_RNASeqExpression__ t/data/conf/fast_track/rna_seq/rna_seq_Comparative_RNA_seq_analysis_of_three_bacterial_species_Clostridium_difficil_840.conf\n", '1st line of high level config');
+
+my $expected_command14 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
+$expected_command14 .= $hps_fast_track_rna_seq_lane->pipeline_runners()->[0]->config_files->{'tempdir'};
+$expected_command14 .= '/fast_track_rna_seq_pipeline.conf -l t/data/log/fast_track_rna_seq_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.rna_seq_pipeline.lock -m 500';
+
+
+is ( $hps_fast_track_rna_seq_lane->pipeline_runners()->[0]->command_to_run, $expected_command14, 'Command to run rna_seq pipeline for rna_seqing one lane' );
+
+ok ( dir_to_remove($hps_fast_track_rna_seq_lane->pipeline_runners()->[0]->config_files->{'tempdir'}->dirname), 'Removing temp dir' );
+
+
+#All common PIPELINES
+
+print "All common pipelines tests( qc..rna-seq )\n";
+my @pipelines = qw(qc mapping assembly annotation snp-calling rna-seq);
+ok ( my $hps_fast_track_all_pipelines =  Bio::HPS::FastTrack->new( study => 'Comparative RNA-seq analysis of three bacterial species', database => 'pathogen_hpsft_test', pipeline => \@pipelines, mode => 'test' ),
+     'Creating several pipeline HPS::FastTrack objects' );
+is ( $hps_fast_track_all_pipelines->database(), 'pathogen_hpsft_test', 'Database name comparison rna_seq for study');
+is_deeply ( $hps_fast_track_all_pipelines->pipeline(), ['qc', 'mapping', 'assembly', 'annotation', 'snp-calling', 'rna-seq'], 'Pipeline types comparison rna_seq for study');
+isa_ok ( $hps_fast_track_all_pipelines->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::QC' );
+isa_ok ( $hps_fast_track_all_pipelines->pipeline_runners()->[1], 'Bio::HPS::FastTrack::PipelineRun::Mapping' );
+isa_ok ( $hps_fast_track_all_pipelines->pipeline_runners()->[2], 'Bio::HPS::FastTrack::PipelineRun::Assembly' );
+isa_ok ( $hps_fast_track_all_pipelines->pipeline_runners()->[3], 'Bio::HPS::FastTrack::PipelineRun::Annotation' );
+isa_ok ( $hps_fast_track_all_pipelines->pipeline_runners()->[4], 'Bio::HPS::FastTrack::PipelineRun::SNPCalling' );
+isa_ok ( $hps_fast_track_all_pipelines->pipeline_runners()->[5], 'Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis' );
 
 
 done_testing();

@@ -11,13 +11,6 @@ my $assembly_config = Bio::HPS::FastTrack::Config::Assembly->new(study => 'My St
 use Moose;
 extends('Bio::HPS::FastTrack::Config::Config');
 
-sub run {
-
-  my ($self) = @_;
-  return 1;
-
-}
-
 no Moose;
 __PACKAGE__->meta->make_immutable;
 1;

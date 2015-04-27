@@ -11,12 +11,6 @@ my $rna_seq_config = Bio::HPS::FastTrack::Config::RNASeqAnalysis->new(study => '
 use Moose;
 extends('Bio::HPS::FastTrack::Config::Config');
 
-sub run {
-
-  my ($self) = @_;
-  return 1;
-
-}
 
 no Moose;
 __PACKAGE__->meta->make_immutable;

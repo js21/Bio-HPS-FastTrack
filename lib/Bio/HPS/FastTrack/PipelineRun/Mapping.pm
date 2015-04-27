@@ -13,7 +13,6 @@ extends('Bio::HPS::FastTrack::PipelineRun::PipelineRun');
 
 has 'pipeline_exec' => ( is => 'ro', isa => 'Str', default => '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline' );
 has 'pipeline_stage' => ( is => 'ro', isa => 'Str', default => 'mapping_pipeline' );
-has 'command_to_run' => ( is => 'rw', isa => 'Str', lazy => 1, builder => '_build_command_to_run' );
 
 
 no Moose;

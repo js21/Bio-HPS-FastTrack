@@ -9,7 +9,9 @@ my $mapping_config = Bio::HPS::FastTrack::Config::Mapping->new(study => 'My Stud
 =cut
 
 use Moose;
+
 extends('Bio::HPS::FastTrack::Config::Config');
+
 
 no Moose;
 __PACKAGE__->meta->make_immutable;

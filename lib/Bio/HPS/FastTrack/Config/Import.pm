@@ -15,13 +15,6 @@ extends('Bio::HPS::FastTrack::Config::Config');
 has 'suffix_for_config_path' => ( is => 'rw', isa => 'Str', builder => '_build_suffix_for_config_path' );
 has 'config_template' => ( is => 'rw', isa => 'Str', lazy => 1, builder => '_build_config_template' );
 
-sub _build_suffix_for_config_path {
-
-  my ($self) = @_;
-  return $self->db_alias() eq 'no alias' ? $self->database() : $self->db_alias();;
-}
-
-
 sub _build_config_template {
 
   my ($self) = @_;
