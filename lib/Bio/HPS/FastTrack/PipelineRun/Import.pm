@@ -13,27 +13,6 @@ extends('Bio::HPS::FastTrack::PipelineRun::PipelineRun');
 
 has 'pipeline_exec' => ( is => 'ro', isa => 'Str', default => '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline' );
 has 'pipeline_stage' => ( is => 'ro', isa => 'Str', default => 'import_cram_pipeline' );
-has 'command_to_run' => ( is => 'rw', isa => 'Str', lazy => 1, builder => '_build_command_to_run' );
-
-sub _build_command_to_run {
-
-  my ($self) = @_;
-  my $lock_file = $self->lock_file();
-  my $command = $self->pipeline_exec();
-  my $command_to_run = $self->pipeline_exec . q( -c ) . $self->config_files->{'high_level'} . q( -l ) . $self->config_files->{'log_file'};
-  $command_to_run .= q( -v -v -L ) . $self->lock_file;
-  $command_to_run .= q( -m 500);
-  return $command_to_run;
-}
-
-sub run {
-
-  my ($self) = @_;
-  my $command = $self->command_to_run();
-  my $output = `$command`;
-  sleep($self->sleep_time);
-  print "$output\n";
-}
 
 no Moose;
 __PACKAGE__->meta->make_immutable;

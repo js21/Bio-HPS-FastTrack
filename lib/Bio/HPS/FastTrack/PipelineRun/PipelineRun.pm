@@ -32,13 +32,8 @@ has 'lock_file' => ( is => 'rw', isa => 'Str', lazy => 1, builder => '_build_loc
 has 'study_metadata' => ( is => 'rw', isa => 'Bio::HPS::FastTrack::VRTrackWrapper::Study', lazy => 1, builder => '_build_study_metadata' );
 has 'lane_metadata' => ( is => 'rw', isa => 'Bio::HPS::FastTrack::VRTrackWrapper::Lane', lazy => 1, builder => '_build_lane_metadata' );
 has 'config_files' => ( is => 'rw', isa => 'HashRef', lazy => 1, builder => '_build_config_files' );
+has 'command_to_run' => ( is => 'rw', isa => 'Str', lazy => 1, builder => '_build_command_to_run' );
 
-sub run {
-
-  my ($self) = @_;
-  return 1;
-
-}
 
 sub _build_pipeline_runner {
 
@@ -124,6 +119,34 @@ sub _build_config_files {
   $self->temp_dir($config_files->{'tempdir'}->dirname);
   return $config_files;
 }
+
+sub _build_command_to_run {
+
+  my ($self) = @_;
+
+  if ( $self->pipeline_stage eq 'qc_pipeline') {
+    if ( ( !defined $self->study || $self->study eq q() ) && defined $self->lane && $self->lane ne q() ) {
+      Bio::HPS::FastTrack::Exception::FeatureNotYetImplemented->throw( error => "Fast tracking QC for a specific lane is not yet possible\n" );
+    }
+  }
+
+  my $lock_file = $self->lock_file();
+  my $command = $self->pipeline_exec();
+  my $command_to_run = $self->pipeline_exec . q( -c ) . $self->config_files->{'high_level'} . q( -l ) . $self->config_files->{'log_file'};
+  $command_to_run .= q( -v -v -L ) . $self->lock_file;
+  $command_to_run .= q( -m 500);
+  return $command_to_run;
+}
+
+sub run {
+
+  my ($self) = @_;
+  my $command = $self->command_to_run();
+  my $output = `$command`;
+  sleep($self->sleep_time);
+  print "$output\n";
+}
+
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
