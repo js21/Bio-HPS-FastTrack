@@ -106,6 +106,7 @@ sub _extract_studies_to_run {
   for my $reg_study(@lines) {
     chomp($reg_study);
     if ( $reg_study =~ m/$study_string/) {
+      $reg_study =~ s/^#+//g;
       push(@registered_studies, $reg_study);
     }
   }

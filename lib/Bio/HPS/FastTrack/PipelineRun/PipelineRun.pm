@@ -142,6 +142,7 @@ sub run {
 
   my ($self) = @_;
   my $command = $self->command_to_run();
+  #print "$command\n";
   my $output = `$command`;
   sleep($self->sleep_time);
   print "$output\n";
