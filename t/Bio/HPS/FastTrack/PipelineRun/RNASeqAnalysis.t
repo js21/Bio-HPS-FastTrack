@@ -1,4 +1,3 @@
-
 #!/usr/bin/env perl
 use Moose;
 use Data::Dumper;
@@ -14,7 +13,7 @@ BEGIN {
 ok( my $rna_seq_runner = Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis->new( study =>  'Comparative RNA seq analysis of three bacterial species', database => 'pathogen_hpsft_test', mode => 'test' ), 'Creating a RNASeqAnalysis runner object');
 isa_ok ( $rna_seq_runner, 'Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis' );
 ok ( $rna_seq_runner->command_to_run, 'Build command to run for RNASeqAnalysis pipeline');
-is ( $rna_seq_runner->command_to_run, '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ' . $rna_seq_runner->temp_dir . '/fast_track_rna_seq_pipeline.conf -l t/data/log/fast_track_rna_seq_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.rna_seq_pipeline.lock -m 500', 'Building run command');
+is ( $rna_seq_runner->command_to_run, '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ' . $rna_seq_runner->temp_dir . '/fast_track_rna_seq_pipeline.conf -l t/data/log/fast_track_rna_seq_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.rna_seq_pipeline.lock -m 500 -s 2', 'Building run command');
 ok ( -e $rna_seq_runner->config_files->{'high_level'}, 'High level config file in place' );
 my @lines = read_file($rna_seq_runner->config_files->{'high_level'});
 is ( $lines[0], "__VRTrack_RNASeqExpression__ t/data/conf/fast_track/rna_seq/rna_seq_Comparative_RNA_seq_analysis_of_three_bacterial_species_Clostridium_difficil_840.conf\n", '1st line of high level config');
@@ -24,7 +23,7 @@ ok ( dir_to_remove($rna_seq_runner->config_files->{'tempdir'}->dirname), 'Remove
 ok( my $rna_seq_runner2 = Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis->new( study =>  'Comparative RNA seq analysis of three bacterial species', lane =>  '8405_4#11', database => 'pathogen_hpsft_test', mode => 'test' ), 'Creating a RNASeqAnalysis runner object');
 isa_ok ( $rna_seq_runner2, 'Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis' );
 ok ( $rna_seq_runner2->command_to_run, 'Build command to run for RNASeqAnalysis pipeline');
-is ( $rna_seq_runner2->command_to_run, '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ' . $rna_seq_runner2->temp_dir . '/fast_track_rna_seq_pipeline.conf -l t/data/log/fast_track_rna_seq_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.rna_seq_pipeline.lock -m 500', 'Building run command');
+is ( $rna_seq_runner2->command_to_run, '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ' . $rna_seq_runner2->temp_dir . '/fast_track_rna_seq_pipeline.conf -l t/data/log/fast_track_rna_seq_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.rna_seq_pipeline.lock -m 500 -s 2', 'Building run command');
 ok ( -e $rna_seq_runner2->config_files->{'high_level'}, 'High level config file in place' );
 my @lines2 = read_file($rna_seq_runner2->config_files->{'high_level'});
 is ( $lines2[0], "__VRTrack_RNASeqExpression__ t/data/conf/fast_track/rna_seq/rna_seq_Comparative_RNA_seq_analysis_of_three_bacterial_species_Clostridium_difficil_840.conf\n", '1st line of high level config');

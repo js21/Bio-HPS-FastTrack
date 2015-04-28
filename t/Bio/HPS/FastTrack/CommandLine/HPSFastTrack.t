@@ -27,7 +27,7 @@ Usage:
   -p|pipeline      <the pipeline to run>
   -s|study         <optional: Study name to fast track>
   -l|lane          <optional: Lane name to fast track>
-  -t|sleep_time    <optional: Time in seconds to wait for pipeline to run. Defaults to 120 seconds>
+  -t|sleep_time    <optional: Time in seconds to wait for pipeline to run. Defaults to 2 minutes>
   -h|help          <print this message>
 
 Utility script to fast track high priority samples through the Pathogen Informatics pipelines

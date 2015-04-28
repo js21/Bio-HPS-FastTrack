@@ -25,7 +25,7 @@ is ($lines[24], qq(                               'Comparative\\ RNA\\ seq\\ ana
 
 my $expected_command1 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
 $expected_command1 .= $import_runner->config_files->{'tempdir'};
-$expected_command1 .= '/import_cram_pipeline_fast_track.conf -l t/data/log/fast_track_import_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.import_cram_pipeline.lock -m 500';
+$expected_command1 .= '/import_cram_pipeline_fast_track.conf -l t/data/log/fast_track_import_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.import_cram_pipeline.lock -m 500 -s 2';
 
 is ( $import_runner->command_to_run, $expected_command1, 'Command to run import pipeline' );
 
@@ -47,7 +47,7 @@ is ($lines2[24], qq(                               '8405_4#11'\n), 'Lane in plac
 
 my $expected_command2 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
 $expected_command2 .= $import_runner2->config_files->{'tempdir'};
-$expected_command2 .= '/import_cram_pipeline_fast_track.conf -l t/data/log/fast_track_import_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.import_cram_pipeline.lock -m 500';
+$expected_command2 .= '/import_cram_pipeline_fast_track.conf -l t/data/log/fast_track_import_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.import_cram_pipeline.lock -m 500 -s 2';
 
 is ( $import_runner2->command_to_run, $expected_command2, 'Command to run import pipeline for one lane' );
 

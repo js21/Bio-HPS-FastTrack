@@ -80,7 +80,7 @@ is ($lines1[24], qq(                               'Comparative\\ RNA-seq\\ anal
 
 my $expected_command1 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
 $expected_command1 .= $hps_fast_track_import_study->pipeline_runners()->[0]->config_files->{'tempdir'};
-$expected_command1 .= '/import_cram_pipeline_fast_track.conf -l t/data/log/fast_track_import_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.import_cram_pipeline.lock -m 500';
+$expected_command1 .= '/import_cram_pipeline_fast_track.conf -l t/data/log/fast_track_import_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.import_cram_pipeline.lock -m 500 -s 2';
 
 is ( $hps_fast_track_import_study->pipeline_runners()->[0]->command_to_run, $expected_command1, 'Command to run import pipeline for study' );
 
@@ -106,7 +106,7 @@ is ($lines2[24], qq(                               '8405_4#7'\n), 'Lane id in pl
 
 my $expected_command2 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
 $expected_command2 .= $hps_fast_track_import_lane->pipeline_runners()->[0]->config_files->{'tempdir'};
-$expected_command2 .= '/import_cram_pipeline_fast_track.conf -l t/data/log/fast_track_import_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.import_cram_pipeline.lock -m 500';
+$expected_command2 .= '/import_cram_pipeline_fast_track.conf -l t/data/log/fast_track_import_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.import_cram_pipeline.lock -m 500 -s 2';
 
 is ( $hps_fast_track_import_lane->pipeline_runners()->[0]->command_to_run, $expected_command2, 'Command to run import pipeline for importing one lane' );
 
@@ -136,7 +136,7 @@ is ( $lines3[1], "__VRTrack_QC__ t/data/conf/fast_track/qc/qc_Comparative_RNA_se
 
 my $expected_command3 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
 $expected_command3 .= $hps_fast_track_qc_study->pipeline_runners()->[0]->config_files->{'tempdir'};
-$expected_command3 .= '/fast_track_qc_pipeline.conf -l t/data/log/fast_track_qc_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.qc_pipeline.lock -m 500';
+$expected_command3 .= '/fast_track_qc_pipeline.conf -l t/data/log/fast_track_qc_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.qc_pipeline.lock -m 500 -s 2';
 is ( $hps_fast_track_qc_study->pipeline_runners()->[0]->command_to_run, $expected_command3, 'Command to run qc pipeline for study' );
 
 ok ( dir_to_remove($hps_fast_track_qc_study->pipeline_runners()->[0]->config_files->{'tempdir'}->dirname ), 'Removing temp dir' );
@@ -159,7 +159,7 @@ is ( $lines4[1], "__VRTrack_QC__ t/data/conf/fast_track/qc/qc_Comparative_RNA_se
 
 my $expected_command4 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
 $expected_command4 .= $hps_fast_track_qc_lane->pipeline_runners()->[0]->config_files->{'tempdir'};
-$expected_command4 .= '/fast_track_qc_pipeline.conf -l t/data/log/fast_track_qc_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.qc_pipeline.lock -m 500';
+$expected_command4 .= '/fast_track_qc_pipeline.conf -l t/data/log/fast_track_qc_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.qc_pipeline.lock -m 500 -s 2';
 
 
 is ( $hps_fast_track_qc_lane->pipeline_runners()->[0]->command_to_run, $expected_command4, 'Command to run qc pipeline for qcing one lane' );
@@ -191,7 +191,7 @@ is ( $lines5[1],
 
 my $expected_command5 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
 $expected_command5 .= $hps_fast_track_mapping_study->pipeline_runners()->[0]->config_files->{'tempdir'};
-$expected_command5 .= '/fast_track_mapping_pipeline.conf -l t/data/log/fast_track_mapping_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.mapping_pipeline.lock -m 500';
+$expected_command5 .= '/fast_track_mapping_pipeline.conf -l t/data/log/fast_track_mapping_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.mapping_pipeline.lock -m 500 -s 2';
 is ( $hps_fast_track_mapping_study->pipeline_runners()->[0]->command_to_run, $expected_command5, 'Command to run mapping pipeline for study' );
 
 ok ( dir_to_remove($hps_fast_track_mapping_study->pipeline_runners()->[0]->config_files->{'tempdir'}->dirname ), 'Removing temp dir' );
@@ -216,7 +216,7 @@ is ( $lines6[1],
 
 my $expected_command6 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
 $expected_command6 .= $hps_fast_track_mapping_lane->pipeline_runners()->[0]->config_files->{'tempdir'};
-$expected_command6 .= '/fast_track_mapping_pipeline.conf -l t/data/log/fast_track_mapping_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.mapping_pipeline.lock -m 500';
+$expected_command6 .= '/fast_track_mapping_pipeline.conf -l t/data/log/fast_track_mapping_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.mapping_pipeline.lock -m 500 -s 2';
 
 
 is ( $hps_fast_track_mapping_lane->pipeline_runners()->[0]->command_to_run, $expected_command6, 'Command to run mapping pipeline for mappinging one lane' );
@@ -242,7 +242,7 @@ is ( $lines7[0], "__VRTrack_Assembly__ t/data/conf/fast_track/assembly/assembly_
 
 my $expected_command7 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
 $expected_command7 .= $hps_fast_track_assembly_study->pipeline_runners()->[0]->config_files->{'tempdir'};
-$expected_command7 .= '/fast_track_assembly_pipeline.conf -l t/data/log/fast_track_assembly_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.assembly_pipeline.lock -m 500';
+$expected_command7 .= '/fast_track_assembly_pipeline.conf -l t/data/log/fast_track_assembly_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.assembly_pipeline.lock -m 500 -s 2';
 is ( $hps_fast_track_assembly_study->pipeline_runners()->[0]->command_to_run, $expected_command7, 'Command to run assembly pipeline for study' );
 
 ok ( dir_to_remove($hps_fast_track_assembly_study->pipeline_runners()->[0]->config_files->{'tempdir'}->dirname ), 'Removing temp dir' );
@@ -264,7 +264,7 @@ is ( $lines8[0], "__VRTrack_Assembly__ t/data/conf/fast_track/assembly/assembly_
 
 my $expected_command8 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
 $expected_command8 .= $hps_fast_track_assembly_lane->pipeline_runners()->[0]->config_files->{'tempdir'};
-$expected_command8 .= '/fast_track_assembly_pipeline.conf -l t/data/log/fast_track_assembly_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.assembly_pipeline.lock -m 500';
+$expected_command8 .= '/fast_track_assembly_pipeline.conf -l t/data/log/fast_track_assembly_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.assembly_pipeline.lock -m 500 -s 2';
 
 
 is ( $hps_fast_track_assembly_lane->pipeline_runners()->[0]->command_to_run, $expected_command8, 'Command to run assembly pipeline for assemblying one lane' );
@@ -292,7 +292,7 @@ is ( $lines9[0], "__VRTrack_AnnotateAssembly__ t/data/conf/fast_track/annotate_a
 
 my $expected_command9 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
 $expected_command9 .= $hps_fast_track_annotation_study->pipeline_runners()->[0]->config_files->{'tempdir'};
-$expected_command9 .= '/fast_track_annotate_assembly_pipeline.conf -l t/data/log/fast_track_annotate_assembly_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.annotate_assembly_pipeline.lock -m 500';
+$expected_command9 .= '/fast_track_annotate_assembly_pipeline.conf -l t/data/log/fast_track_annotate_assembly_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.annotate_assembly_pipeline.lock -m 500 -s 2';
 is ( $hps_fast_track_annotation_study->pipeline_runners()->[0]->command_to_run, $expected_command9, 'Command to run annotation pipeline for study' );
 
 ok ( dir_to_remove($hps_fast_track_annotation_study->pipeline_runners()->[0]->config_files->{'tempdir'}->dirname ), 'Removing temp dir' );
@@ -314,7 +314,7 @@ is ( $lines10[0], "__VRTrack_AnnotateAssembly__ t/data/conf/fast_track/annotate_
 
 my $expected_command10 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
 $expected_command10 .= $hps_fast_track_annotation_lane->pipeline_runners()->[0]->config_files->{'tempdir'};
-$expected_command10 .= '/fast_track_annotate_assembly_pipeline.conf -l t/data/log/fast_track_annotate_assembly_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.annotate_assembly_pipeline.lock -m 500';
+$expected_command10 .= '/fast_track_annotate_assembly_pipeline.conf -l t/data/log/fast_track_annotate_assembly_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.annotate_assembly_pipeline.lock -m 500 -s 2';
 
 
 is ( $hps_fast_track_annotation_lane->pipeline_runners()->[0]->command_to_run, $expected_command10, 'Command to run annotation pipeline for annotationing one lane' );
@@ -341,7 +341,7 @@ is ( $lines11[0], "__VRTrack_SNPs__ t/data/conf/fast_track/snps/snps_Comparative
 
 my $expected_command11 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
 $expected_command11 .= $hps_fast_track_snps_study->pipeline_runners()->[0]->config_files->{'tempdir'};
-$expected_command11 .= '/fast_track_snps_pipeline.conf -l t/data/log/fast_track_snps_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.snps_pipeline.lock -m 500';
+$expected_command11 .= '/fast_track_snps_pipeline.conf -l t/data/log/fast_track_snps_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.snps_pipeline.lock -m 500 -s 2';
 is ( $hps_fast_track_snps_study->pipeline_runners()->[0]->command_to_run, $expected_command11, 'Command to run snps pipeline for study' );
 
 ok ( dir_to_remove($hps_fast_track_snps_study->pipeline_runners()->[0]->config_files->{'tempdir'}->dirname ), 'Removing temp dir' );
@@ -363,7 +363,7 @@ is ( $lines12[0], "__VRTrack_SNPs__ t/data/conf/fast_track/snps/snps_Comparative
 
 my $expected_command12 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
 $expected_command12 .= $hps_fast_track_snps_lane->pipeline_runners()->[0]->config_files->{'tempdir'};
-$expected_command12 .= '/fast_track_snps_pipeline.conf -l t/data/log/fast_track_snps_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.snps_pipeline.lock -m 500';
+$expected_command12 .= '/fast_track_snps_pipeline.conf -l t/data/log/fast_track_snps_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.snps_pipeline.lock -m 500 -s 2';
 
 
 is ( $hps_fast_track_snps_lane->pipeline_runners()->[0]->command_to_run, $expected_command12, 'Command to run snps pipeline for snpsing one lane' );
@@ -389,7 +389,7 @@ is ( $lines13[0], "__VRTrack_RNASeqExpression__ t/data/conf/fast_track/rna_seq/r
 
 my $expected_command13 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
 $expected_command13 .= $hps_fast_track_rna_seq_study->pipeline_runners()->[0]->config_files->{'tempdir'};
-$expected_command13 .= '/fast_track_rna_seq_pipeline.conf -l t/data/log/fast_track_rna_seq_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.rna_seq_pipeline.lock -m 500';
+$expected_command13 .= '/fast_track_rna_seq_pipeline.conf -l t/data/log/fast_track_rna_seq_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.rna_seq_pipeline.lock -m 500 -s 2';
 is ( $hps_fast_track_rna_seq_study->pipeline_runners()->[0]->command_to_run, $expected_command13, 'Command to run rna_seq pipeline for study' );
 
 ok ( dir_to_remove($hps_fast_track_rna_seq_study->pipeline_runners()->[0]->config_files->{'tempdir'}->dirname ), 'Removing temp dir' );
@@ -411,7 +411,7 @@ is ( $lines14[0], "__VRTrack_RNASeqExpression__ t/data/conf/fast_track/rna_seq/r
 
 my $expected_command14 = '/software/pathogen/internal/pathdev/vr-codebase/scripts/run-pipeline -c ';
 $expected_command14 .= $hps_fast_track_rna_seq_lane->pipeline_runners()->[0]->config_files->{'tempdir'};
-$expected_command14 .= '/fast_track_rna_seq_pipeline.conf -l t/data/log/fast_track_rna_seq_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.rna_seq_pipeline.lock -m 500';
+$expected_command14 .= '/fast_track_rna_seq_pipeline.conf -l t/data/log/fast_track_rna_seq_pipeline.log -v -v -L t/data/conf/fast_track/.pathogen_hpsft_test.rna_seq_pipeline.lock -m 500 -s 2';
 
 
 is ( $hps_fast_track_rna_seq_lane->pipeline_runners()->[0]->command_to_run, $expected_command14, 'Command to run rna_seq pipeline for rna_seqing one lane' );

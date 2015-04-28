@@ -19,7 +19,7 @@ has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'mode' => ( is => 'rw', isa => 'RunMode', required => 1);
 has 'study' => ( is => 'rw', isa => 'Str', lazy => 1, default => '');
 has 'lane' => ( is => 'rw', isa => 'Str', lazy => 1, default => '');
-has 'sleep_time' => ( is => 'rw', isa => 'Int', lazy => 1, default => 120 );
+has 'sleep_time' => ( is => 'rw', isa => 'Int', lazy => 1, default => 2 );
 has 'pipeline_runners'   => ( is => 'rw', isa => 'ArrayRef', lazy => 1, builder => '_build_pipeline_runners');
 
 sub run {
@@ -30,15 +30,13 @@ sub run {
     if ( $self->study() ) {
       $pipeline_runner->config_files() unless $self->pipeline eq 'update'; #The Update pipeline follows a different protocol. No config files are required
       $pipeline_runner->command_to_run();
-      $pipeline_runner->run();
-      #$pipeline_runner->run() if $self->mode() eq 'prod'; #Only run if in production
+      $pipeline_runner->run() if $self->mode() eq 'prod'; #Only run if in production
     }
     else {
       $pipeline_runner->config_files() unless $self->pipeline eq 'update'; #The Update pipeline follows a different protocol. No config files are required
       $pipeline_runner->lane_metadata();
       $pipeline_runner->command_to_run();
-      $pipeline_runner->run();
-      #$pipeline_runner->run() if $self->mode() eq 'prod'; #Only run if in production
+      $pipeline_runner->run() if $self->mode() eq 'prod'; #Only run if in production
     }
     _remove_temp_dir( $pipeline_runner->temp_dir );
   }

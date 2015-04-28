@@ -19,7 +19,7 @@ use Bio::HPS::FastTrack::Exception;
 has 'root' => ( is => 'rw', isa => 'Str', default => '/nfs/pathnfs05/conf/' );
 has 'pipeline_exec' => ( is => 'ro', isa => 'Str', default => '' );
 has 'pipeline_stage' => ( is => 'ro', isa => 'Str', default => '' );
-has 'sleep_time' => ( is => 'rw', isa => 'Int', lazy => 1, default => 120 );
+has 'sleep_time' => ( is => 'rw', isa => 'Int', lazy => 1, default => 2 );
 
 has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'mode' => ( is => 'rw', isa => 'RunMode', required => 1);
@@ -133,11 +133,10 @@ sub _build_command_to_run {
 
   my $lock_file = $self->lock_file();
   my $command = $self->pipeline_exec();
-  my $time_to_sleep = $self->sleep_time / 60;
   my $command_to_run = $self->pipeline_exec . q( -c ) . $self->config_files->{'high_level'} . q( -l ) . $self->config_files->{'log_file'};
   $command_to_run .= q( -v -v -L ) . $self->lock_file;
   $command_to_run .= q( -m 500);
-  $command_to_run .= qq( -s $time_to_sleep);
+  $command_to_run .= qq( -s ) . $self->sleep_time;
   return $command_to_run;
 }
 

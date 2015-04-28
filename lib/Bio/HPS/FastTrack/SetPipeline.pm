@@ -26,7 +26,7 @@ has 'lane'   => ( is => 'rw', isa => 'Str', lazy => 1, default => '');
 has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'mode' => ( is => 'rw', isa => 'RunMode', required => 1);
 has 'pipeline'   => ( is => 'rw',  isa => 'Maybe[ArrayRef]', required => 1);
-has 'sleep_time' => ( is => 'rw', isa => 'Int', lazy => 1, default => 120 );
+has 'sleep_time' => ( is => 'rw', isa => 'Int', lazy => 1, default => 2 );
 has 'pipeline_runners'   => ( is => 'rw', isa => 'ArrayRef', lazy => 1, builder => '_build_pipeline_runners');
 
 
