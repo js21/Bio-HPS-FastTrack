@@ -4,8 +4,9 @@ package Bio::HPS::FastTrack::PipelineRun::Annotation;
 
 =head1 SYNOPSIS
 
-my $annotation_runner = Bio::HPS::FastTrack::PipelineRun::Annotation->new(study => 'My Study', lane => 'My lane' , database => 'My_Database', mode => 'test');
-
+my $annotation_runner = Bio::HPS::FastTrack::PipelineRun::Annotation->new(study => 'My Study', lane => 'My lane' , database => 'My_Database', mode => 'prod');
+$annotation_runner->command_to_run;
+$annotation_runner->run;
 =cut
 
 use Moose;

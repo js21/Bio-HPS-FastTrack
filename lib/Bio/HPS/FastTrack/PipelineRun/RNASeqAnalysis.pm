@@ -4,8 +4,9 @@ package Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis;
 
 =head1 SYNOPSIS
 
-my $rna_seq_runner = Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis->new(study => 'My Study', lane => 'My lane' , database => 'My_Database', mode => 'test');
-
+my $rna_seq_runner = Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis->new(study => 'My Study', lane => 'My lane' , database => 'My_Database', mode => 'prod');
+$rna_seq_runner->command_to_run;
+$rna_seq_runner->run;
 =cut
 
 use Moose;

@@ -4,8 +4,9 @@ package Bio::HPS::FastTrack::PipelineRun::SNPCalling;
 
 =head1 SYNOPSIS
 
-my $snp_calling_runner = Bio::HPS::FastTrack::PipelineRun::SNPCalling->new(study => 'My Study', lane => 'My lane' , database => 'My_Database', mode => 'test');
-
+my $snp_calling_runner = Bio::HPS::FastTrack::PipelineRun::SNPCalling->new(study => 'My Study', lane => 'My lane' , database => 'My_Database', mode => 'prod');
+$snp_calling_runner->command_to_run;
+$snp_calling_runner->run;
 =cut
 
 use Moose;

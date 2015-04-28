@@ -4,7 +4,9 @@ package Bio::HPS::FastTrack::PipelineRun::Update;
 
 =head1 SYNOPSIS
 
-my $update_runner = Bio::HPS::FastTrack::PipelineRun::Update->new(study => 'My Study', lane => 'My lane' , database => 'My_Database', mode => 'test');
+my $update_runner = Bio::HPS::FastTrack::PipelineRun::Update->new(study => 'My Study', lane => 'My lane' , database => 'My_Database', mode => 'prod');
+$update_runner->command_to_run;
+$update_runner->run;
 
 =cut
 
@@ -15,6 +17,11 @@ has 'pipeline_exec' => ( is => 'ro', isa => 'Str', default => '/software/pathoge
 has 'pipeline_stage' => ( is => 'ro', isa => 'Str', default => 'update_pipeline' );
 has 'command_to_run' => ( is => 'rw', isa => 'Str', lazy => 1, builder => '_build_command_to_run' );
 
+#_build_command_to_run
+#Overrides the parent class method.
+#Builds a different command
+#from the rest of the pipeline
+#runners.
 sub _build_command_to_run {
 
   my ($self) = @_;
@@ -42,7 +49,7 @@ sub run {
 
   my ($self) = @_;
   my $command = $self->command_to_run();
-  my $output = `cd /software/pathogen/projects/update_pipeline; $command`;
+  my $output = `cd /software/pathogen/projects/update_pipeline; $command` if $self->mode eq 'prod';
   print "$output\n";
 }
 

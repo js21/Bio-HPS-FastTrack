@@ -2,8 +2,14 @@ package Bio::HPS::FastTrack::CommandLine::HPSFastTrack;
 
 # ABSTRACT: Command line API for the HPS FastTrack application
 
+
 =head1 SYNOPSIS
 
+hps_fast_track -d pathogen_hpsft_test -s 'MRSA studies' -p mapping -t 1
+
+or potentially
+
+hps_fast_track -d pathogen_hpsft_test -s 'MRSA studies' -p update -p import -p mapping -t 1
 
 =cut
 
@@ -72,9 +78,9 @@ Usage:
   Specify the study name, the lane or both
   -d|database      <the tracking database to store the relevant data for the study/lane>
   -p|pipeline      <the pipeline to run>
-  -s|study         <optional: Study name to fast track>
-  -l|lane          <optional: Lane name to fast track>
-  -t|sleep_time    <optional: Time in seconds to wait for pipeline to run. Defaults to 2 minutes>
+  -s|study         <optional if lane is used: Study name to fast track>
+  -l|lane          <optional if study is used: Lane name to fast track>
+  -t|sleep_time    <optional: Time in minutes to wait for pipeline to run. Defaults to 2 minutes>
   -h|help          <print this message>
 
 Utility script to fast track high priority samples through the Pathogen Informatics pipelines

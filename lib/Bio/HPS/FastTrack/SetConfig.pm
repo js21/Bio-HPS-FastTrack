@@ -4,7 +4,16 @@ package Bio::HPS::FastTrack::SetConfig;
 
 =head1 SYNOPSIS
 
-my $hps_config = Bio::HPS::FastTrack::Config->new( id => '123', database => 'pathogen_prok_track_test')
+my $config_setter = Bio::HPS::FastTrack::SetConfig->new(
+							study => 'My study',
+							lane => 'My lane',
+							database => 'My database',
+							pipeline_stage => 'update | import | mapping | assembly | annotation | snp-calling | rna-seq',
+							db_alias => 'no alias',
+							root => 'path/to/my/configuration/root',
+							mode => 'test | production'
+						       );
+my $config_files = $config_setter->config_files();
 
 =cut
 
@@ -29,7 +38,9 @@ has 'root'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'mode'   => ( is => 'rw', isa => 'RunMode', required => 1 );
 has 'config_files' => ( is => 'rw', isa => 'HashRef', lazy => 1, builder => '_build_config_files' );
 
-
+#_build_config_files:
+#Returns a Hash Ref with paths to
+#configuration files and temp directories
 sub _build_config_files {
 
   my ($self) = @_;

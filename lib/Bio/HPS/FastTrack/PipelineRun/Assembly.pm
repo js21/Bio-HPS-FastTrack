@@ -4,8 +4,9 @@ package Bio::HPS::FastTrack::PipelineRun::Assembly;
 
 =head1 SYNOPSIS
 
-my $assembly_runner = Bio::HPS::FastTrack::PipelineRun::Assembly->new(study => 'My Study', lane => 'My lane' , database => 'My_Database', mode => 'test');
-
+my $assembly_runner = Bio::HPS::FastTrack::PipelineRun::Assembly->new(study => 'My Study', lane => 'My lane' , database => 'My_Database', mode => 'prod');
+$assembly_runner->command_to_run;
+$assembly_runner->run;
 =cut
 
 use Moose;

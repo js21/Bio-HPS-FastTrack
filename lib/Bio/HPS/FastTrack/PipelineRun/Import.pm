@@ -4,7 +4,9 @@ package Bio::HPS::FastTrack::PipelineRun::Import;
 
 =head1 SYNOPSIS
 
-my $import_runner = Bio::HPS::FastTrack::PipelineRun::Import->new(study => 'My Study', lane => 'My lane' , database => 'My_Database', mode => 'test');
+my $import_runner = Bio::HPS::FastTrack::PipelineRun::Import->new(study => 'My Study', lane => 'My lane' , database => 'My_Database', mode => 'prod');
+$import_runner->command_to_run;
+$import_runner->run;
 
 =cut
 

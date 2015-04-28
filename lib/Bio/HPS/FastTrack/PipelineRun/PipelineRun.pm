@@ -4,12 +4,16 @@ package Bio::HPS::FastTrack::PipelineRun::PipelineRun;
 
 =head1 SYNOPSIS
 
-my $mapping_analysis_runner = Bio::HPS::FastTrack::PipelineRun::PipelineRun->new(study => 'My Study', lane => 'My lane' , database => 'My_Database');
+my $pipeline_runner = Bio::HPS::FastTrack::PipelineRun::PipelineRun->new(
+									 study => 'My Study',
+									 lane => 'My lane' ,
+									 database => 'My_Database'
+									 mode => 'prod'
+									);
 
 =cut
 
 use Moose;
-use Time::HiRes qw(sleep);
 use Bio::HPS::FastTrack::SetConfig;
 use Bio::HPS::FastTrack::VRTrackWrapper::Study;
 use Bio::HPS::FastTrack::VRTrackWrapper::Lane;
@@ -35,7 +39,8 @@ has 'lane_metadata' => ( is => 'rw', isa => 'Bio::HPS::FastTrack::VRTrackWrapper
 has 'config_files' => ( is => 'rw', isa => 'HashRef', lazy => 1, builder => '_build_config_files' );
 has 'command_to_run' => ( is => 'rw', isa => 'Str', lazy => 1, builder => '_build_command_to_run' );
 
-
+#_build_pipeline_runner:
+#Supposed to be overriden
 sub _build_pipeline_runner {
 
   my ($self) = @_;
@@ -43,6 +48,8 @@ sub _build_pipeline_runner {
 
 }
 
+#_build_db_alias:
+#Returns the alias for a database
 sub _build_db_alias {
 
   my ($self) = @_;
@@ -63,6 +70,10 @@ sub _build_db_alias {
   }
 }
 
+#_build_study_metadata:
+#Returns a study object with all
+#the study metadata and all the lanes
+#that belong to the study
 sub _build_study_metadata {
 
   my ($self) = @_;
@@ -71,6 +82,9 @@ sub _build_study_metadata {
   return $study;
 }
 
+#_build_lane_metadata:
+#Returns the metadata for a
+#particular lane
 sub _build_lane_metadata {
 
   my ($self) = @_;
@@ -81,6 +95,11 @@ sub _build_lane_metadata {
   return $lane;
 }
 
+#_build_lock_file:
+#Returns the lock file file path.
+#This file ensures that there's
+#only one conneciton writing to a
+#database
 sub _build_lock_file {
 
   my ($self) = @_;
@@ -98,6 +117,9 @@ sub _build_lock_file {
   return $lock_file;
 }
 
+#_build_config_files:
+#Returns a hash ref with config file paths needed
+#for the pipeline that is being fast tracked
 sub _build_config_files {
 
   my ($self) = @_;
@@ -121,6 +143,9 @@ sub _build_config_files {
   return $config_files;
 }
 
+#_build_command_to_run:
+#Builds the command line string
+#that will later run with the run method
 sub _build_command_to_run {
 
   my ($self) = @_;
@@ -131,8 +156,6 @@ sub _build_command_to_run {
     }
   }
 
-  my $lock_file = $self->lock_file();
-  my $command = $self->pipeline_exec();
   my $command_to_run = $self->pipeline_exec . q( -c ) . $self->config_files->{'high_level'} . q( -l ) . $self->config_files->{'log_file'};
   $command_to_run .= q( -v -v -L ) . $self->lock_file;
   $command_to_run .= q( -m 500);
@@ -140,6 +163,9 @@ sub _build_command_to_run {
   return $command_to_run;
 }
 
+
+#run:
+#Runs the command if in production
 sub run {
 
   my ($self) = @_;

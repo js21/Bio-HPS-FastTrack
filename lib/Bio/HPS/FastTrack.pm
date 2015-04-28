@@ -4,8 +4,12 @@ package Bio::HPS::FastTrack;
 
 =head1 SYNOPSIS
 
-my $hps_fast_track_bacteria_update_and_import =  Bio::HPS::FastTrack->new( study => 'My Study', lane => 'My lane' , database => 'My_Database', pipeline => ['update','import'], mode => 'test' );
-$hps_fast_track_bacteria_update_and_import->run;
+my $hps_fast_track_update =  Bio::HPS::FastTrack->new(
+						      study => 'My Study',
+						      database => 'My database',
+						      pipeline => ['update'],
+						     );
+$hps_fast_track_update->run;
 
 =cut
 
@@ -21,6 +25,21 @@ has 'study' => ( is => 'rw', isa => 'Str', lazy => 1, default => '');
 has 'lane' => ( is => 'rw', isa => 'Str', lazy => 1, default => '');
 has 'sleep_time' => ( is => 'rw', isa => 'Int', lazy => 1, default => 2 );
 has 'pipeline_runners'   => ( is => 'rw', isa => 'ArrayRef', lazy => 1, builder => '_build_pipeline_runners');
+
+#_build_pipeline_runners:
+#Builds an Array Ref of PipelineRunner
+#objects
+sub _build_pipeline_runners {
+  my ($self) = @_;
+  return Bio::HPS::FastTrack::SetPipeline->new(
+					       study => $self->study(),
+					       lane => $self->lane(),
+					       pipeline => $self->pipeline(),
+					       database => $self->database(),
+					       sleep_time => $self->sleep_time(),
+					       mode => $self->mode()
+					      )->pipeline_runners();
+}
 
 sub run {
 
@@ -42,21 +61,9 @@ sub run {
   }
 }
 
-sub _build_pipeline_runners {
-  my ($self) = @_;
-  return Bio::HPS::FastTrack::SetPipeline->new(
-					       study => $self->study(),
-					       lane => $self->lane(),
-					       pipeline => $self->pipeline(),
-					       database => $self->database(),
-					       sleep_time => $self->sleep_time(),
-					       mode => $self->mode()
-					      )->pipeline_runners();
-}
-
 sub _remove_temp_dir {
 
-  my ($dir_to_remove) = @_ ;
+  my ($dir_to_remove) = @_;
   if (-d $dir_to_remove) {
     my $output = `rm -rf $dir_to_remove`;
     return 1 if ($output eq q());

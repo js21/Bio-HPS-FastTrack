@@ -4,7 +4,13 @@ package  Bio::HPS::FastTrack::SetPipeline;
 
 =head1 SYNOPSIS
 
-my $analysis_detector = Bio::HPS::FastTrack::SetPipelines->new( study => 'My Study', database => 'My_Database', pipeline => ['My_Pipeline','My_Other_Pipeline'], sleep_time => $self->slee, mode => 'test');
+my $pipeline_setter = Bio::HPS::FastTrack::SetPipelines->new(
+							     study => 'My Study',
+							     database => 'My_Database',
+							     pipeline => ['update','import','mapping','assembly','annotation','snp-calling','rna-seq'],
+							     mode => 'test'
+							    );
+$pipeline_setter->pipeline_runners();
 
 =cut
 
@@ -29,7 +35,9 @@ has 'pipeline'   => ( is => 'rw',  isa => 'Maybe[ArrayRef]', required => 1);
 has 'sleep_time' => ( is => 'rw', isa => 'Int', lazy => 1, default => 2 );
 has 'pipeline_runners'   => ( is => 'rw', isa => 'ArrayRef', lazy => 1, builder => '_build_pipeline_runners');
 
-
+#_build_pipeline_runners:
+#Returns an ArrayRef of PipelineRunner
+#objects
 sub _build_pipeline_runners {
 
   my ($self) = @_;
