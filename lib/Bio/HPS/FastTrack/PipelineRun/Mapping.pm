@@ -4,7 +4,7 @@ package Bio::HPS::FastTrack::PipelineRun::Mapping;
 
 =head1 SYNOPSIS
 
-my $mapping_runner = Bio::HPS::FastTrack::PipelineRun::Mapping->new(study => 'My Study', lane => 'My lane' , database => 'My_Database');
+my $mapping_runner = Bio::HPS::FastTrack::PipelineRun::Mapping->new(study => 'My Study', lane => 'My lane' , database => 'My_Database', mode => 'prod');
 $mapping_runner->command_to_run;
 $mapping_runner->run;
 
