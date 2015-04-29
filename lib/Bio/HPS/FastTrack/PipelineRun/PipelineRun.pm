@@ -31,22 +31,12 @@ has 'study' => ( is => 'rw', isa => 'Str', lazy => 1, default => '' );
 has 'lane' => ( is => 'rw', isa => 'Str', lazy => 1, default => '');
 has 'temp_dir' => ( is => 'rw', isa => 'Str', lazy => 1, default => '' );
 
-has 'pipeline_runner' => ( is => 'rw', isa => 'HashRef', lazy => 1, builder => '_build_pipeline_runner' );
 has 'db_alias' => ( is => 'rw', isa => 'Str', builder => '_build_db_alias' );
 has 'lock_file' => ( is => 'rw', isa => 'Str', lazy => 1, builder => '_build_lock_file' );
 has 'study_metadata' => ( is => 'rw', isa => 'Bio::HPS::FastTrack::VRTrackWrapper::Study', lazy => 1, builder => '_build_study_metadata' );
 has 'lane_metadata' => ( is => 'rw', isa => 'Bio::HPS::FastTrack::VRTrackWrapper::Lane', lazy => 1, builder => '_build_lane_metadata' );
 has 'config_files' => ( is => 'rw', isa => 'HashRef', lazy => 1, builder => '_build_config_files' );
 has 'command_to_run' => ( is => 'rw', isa => 'Str', lazy => 1, builder => '_build_command_to_run' );
-
-#_build_pipeline_runner:
-#Supposed to be overriden
-sub _build_pipeline_runner {
-
-  my ($self) = @_;
-  return {};
-
-}
 
 #_build_db_alias:
 #Returns the alias for a database
@@ -68,6 +58,28 @@ sub _build_db_alias {
   else {
     return( 'no alias' );
   }
+}
+
+#_build_lock_file:
+#Returns the lock file file path.
+#This file ensures that there's
+#only one conneciton writing to a
+#database
+sub _build_lock_file {
+
+  my ($self) = @_;
+
+  #Set root to point to test folder if running in test mode before building the lock file path
+  $self->root('t/data/conf/') if $self->mode eq 'test';
+
+  my $lock_file;
+  if ( $self->db_alias eq 'no alias' || !defined $self->db_alias ) {
+    $lock_file = $self->root() . $self->database() . q(/.) . $self->database() . q(.) . $self->pipeline_stage() . q(.lock);
+  }
+  else {
+    $lock_file = $self->root() . $self->db_alias() . q(/.) . $self->database() . q(.) . $self->pipeline_stage() . q(.lock);
+  }
+  return $lock_file;
 }
 
 #_build_study_metadata:
@@ -93,28 +105,6 @@ sub _build_lane_metadata {
     $self->study($lane->study_name());
   }
   return $lane;
-}
-
-#_build_lock_file:
-#Returns the lock file file path.
-#This file ensures that there's
-#only one conneciton writing to a
-#database
-sub _build_lock_file {
-
-  my ($self) = @_;
-
-  #Set root to point to test folder if running in test mode before building the lock file path
-  $self->root('t/data/conf/') if $self->mode eq 'test';
-
-  my $lock_file;
-  if ( $self->db_alias eq 'no alias' || !defined $self->db_alias ) {
-    $lock_file = $self->root() . $self->database() . q(/.) . $self->database() . q(.) . $self->pipeline_stage() . q(.lock);
-  }
-  else {
-    $lock_file = $self->root() . $self->db_alias() . q(/.) . $self->database() . q(.) . $self->pipeline_stage() . q(.lock);
-  }
-  return $lock_file;
 }
 
 #_build_config_files:
@@ -162,7 +152,6 @@ sub _build_command_to_run {
   $command_to_run .= qq( -s ) . $self->sleep_time;
   return $command_to_run;
 }
-
 
 #run:
 #Runs the command if in production
