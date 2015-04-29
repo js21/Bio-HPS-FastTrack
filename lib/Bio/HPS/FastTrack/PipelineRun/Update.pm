@@ -27,22 +27,21 @@ sub _build_command_to_run {
   my ($self) = @_;
 
   my $lock_file = $self->lock_file();
-  my $command = $self->pipeline_exec();
+  my $command_to_run = $self->pipeline_exec();
   my $min_run_id;
 
   if ($self->lane) {
     $min_run_id = $self->lane_metadata->run_id - 1;
-    $command .= q( -n ') . $self->study . q(' --database=) . $self->database . q( -run ) . $self->lane_metadata->run_id . q( -min ) . $min_run_id . q( -l ) . $self->lock_file . q( -nop -v --file_type cram);
+    $command_to_run .= q( -n ') . $self->study . q(' --database=) . $self->database . q( -run ) . $self->lane_metadata->run_id . q( -min ) . $min_run_id . q( -l ) . $self->lock_file . q( -nop -v --file_type cram);
   }
   elsif ($self->study && $self->lane) {
     $min_run_id = $self->lane_metadata->run_id - 1;
-    $command .= q( -n ') . $self->study_metadata->{'study'} . q(' --database=) . $self->database . q( -run ) . $self->lane_metadata->run_id . q( -min ) . $min_run_id . q( -l ) . $self->lock_file . q( -nop -v --file_type cram);
+    $command_to_run .= q( -n ') . $self->study_metadata->{'study'} . q(' --database=) . $self->database . q( -run ) . $self->lane_metadata->run_id . q( -min ) . $min_run_id . q( -l ) . $self->lock_file . q( -nop -v --file_type cram);
   }
   else {
-    $command .= q( -n ') . $self->study_metadata->{'study'} . q(' --database=) . $self->database . q( -l ) . $self->lock_file . q( -nop -v --file_type cram);
+    $command_to_run .= q( -n ') . $self->study_metadata->{'study'} . q(' --database=) . $self->database . q( -l ) . $self->lock_file . q( -nop -v --file_type cram);
   }
-  return $command;
-
+  return $command_to_run;
 }
 
 sub run {

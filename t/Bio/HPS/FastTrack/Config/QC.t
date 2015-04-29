@@ -29,17 +29,37 @@ is ( $lines[1], "__VRTrack_QC__ t/data/conf/fast_track/qc/qc_Comparative_RNA_seq
 
 ok ( dir_to_remove($qc_config->config_files->{'tempdir'}->dirname), 'Removed temp directory');
 
-ok ( my $qc_config2 = Bio::HPS::FastTrack::Config::QC->new(
-							   lane => '8405_4#11',
+throws_ok { my $qc_config2 = Bio::HPS::FastTrack::Config::QC->new(
 							   database => 'pathogen_hpsft_test',
 							   db_alias => 'fast_track',
 							   root => 't/data/conf/',
 							   pipeline_stage => 'qc_pipeline',
 							   mode => 'test'
-							  ),
-     'Creation of QC config object for a single lane' );
+							  )
+	  } qr/Study and lane were not specified/, 'No study no lane';
 
-throws_ok { $qc_config2->config_files } qr/Fast tracking QC/ , 'Fast track QC for a single lane is not yet implemented';
+
+ok ( my $qc_config3 = Bio::HPS::FastTrack::Config::QC->new(
+						      study => 'Comparative RNA seq analysis of three bacterial species',
+						      lane => '8405_4#10',
+						      database => 'pathogen_hpsft_test',
+						      db_alias => 'fast_track',
+						      root => 't/data/conf/',
+						      pipeline_stage => 'qc_pipeline',
+						      mode => 'test'
+						     ),
+     'Study and Lane config object creation');
+
+ok ( $qc_config3->config_files(), 'Set configuration files for qc with study and lane');
+ok ( -e $qc_config3->config_files->{'high_level'}, 'High level config file in place for lane and study' );
+
+ok ( my @lines2 = read_file( $qc_config3->config_files->{'high_level'} ), 'Read high level QC config file for lane and study') ;
+
+my $expected_line0 = "__VRTrack_QC__ t/data/conf/fast_track/" . $1c_config3->config_files()->{'tempdir'}->qc/qc_Comparative_RNA_seq_analysis_of_three_bacterial_species_Clostridium_difficile.conf\n"
+is ( $lines2[0], , '1st line of high level config');
+is ( $lines2[1], "__VRTrack_QC__ t/data/conf/fast_track/qc/qc_Comparative_RNA_seq_analysis_of_three_bacterial_species_Streptococcus_pyogenes.conf\n", '2nd line of high level config');
+
+ok ( dir_to_remove($qc_config3->config_files->{'tempdir'}->dirname), 'Removed temp directory');
 
 done_testing();
 

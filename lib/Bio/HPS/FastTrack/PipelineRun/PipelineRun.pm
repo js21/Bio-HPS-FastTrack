@@ -150,6 +150,7 @@ sub _build_command_to_run {
   $command_to_run .= q( -v -v -L ) . $self->lock_file;
   $command_to_run .= q( -m 500);
   $command_to_run .= qq( -s ) . $self->sleep_time;
+  print "$command_to_run\n";
   return $command_to_run;
 }
 
